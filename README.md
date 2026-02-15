@@ -7,8 +7,8 @@ Portfolio personal desarrollado con [Astro](https://astro.build).
 ```
 /
 ├── public/
-│   ├── cv/                  # Coloca tu CV aqui
-│   ├── img/                 # Coloca tu foto de perfil aqui
+│   ├── cv/                 
+│   ├── img/                 
 │   ├── CNAME                # Dominio personalizado
 │   └── favicon.svg
 ├── src/
