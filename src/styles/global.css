@@ -399,6 +399,80 @@ footer p {
 .delay-3 { animation-delay: 0.3s; }
 .delay-4 { animation-delay: 0.4s; }
 
+/* ---- LANGUAGE BUTTON FLAG ---- */
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.lang-btn .flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+.lang-btn .lang-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+/* ---- COPY EMAIL BUTTON ---- */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  transition: all 0.18s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.btn-secondary.copied {
+  border-color: transparent;
+  background: rgba(59,130,246,0.12);
+  color: var(--color-accent);
+}
+
+/* ---- SUBTLE BACKGROUND DOTS ---- */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+body::before {
+  background-image: radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.28;
+  animation: dotsBlink 5.2s linear infinite;
+}
+body::after {
+  background-image: radial-gradient(rgba(255,255,255,0.45) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.22;
+  animation: dotsBlink 6.8s linear infinite;
+  animation-delay: 1.6s;
+}
+
+@keyframes dotsBlink {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.42; }
+}
+
+/* Make sure main content sits above the animated background */
+main, .container, header, section, footer, .hero {
+  position: relative;
+  z-index: 1;
+}
+
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 768px) {
