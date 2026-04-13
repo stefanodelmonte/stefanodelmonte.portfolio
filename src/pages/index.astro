@@ -24,7 +24,7 @@ import Layout from '../layouts/Layout.astro';
     <div class="container">
       <div class="hero-content">
         <div class="hero-photo animate-in">
-          <div class="hero-photo-placeholder">foto</div>
+          <img src="/img/profile.webp" alt="Stefano Delmonte" />
         </div>
         <div class="hero-text">
           <h1 class="animate-in delay-1">
@@ -38,7 +38,7 @@ import Layout from '../layouts/Layout.astro';
             Me gusta la tecnologia y resolver problemas. Actualmente estoy formandome como desarrollador, aprendiendo cada dia algo nuevo y buscando oportunidades para crecer profesionalmente en el mundo del software.
           </p>
           <div class="hero-actions animate-in delay-4">
-            <a href="/cv/stefano-delmonte-cv.pdf" download class="btn-primary">
+            <a href="/cv/stefano-delmonte-cv-es.pdf" download id="cvDownload" class="btn-primary">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               <span data-i18n="hero.downloadCV">Descargar CV</span>
             </a>
@@ -193,6 +193,10 @@ import Layout from '../layouts/Layout.astro';
       const btn = document.getElementById('langToggle');
       if (btn) {
         btn.innerHTML = lang === 'es' ? '<span class="flag" aria-hidden>🇪🇸</span> <span class="lang-label">ES</span>' : '<span class="flag" aria-hidden>🇬🇧</span> <span class="lang-label">EN</span>';
+      }
+      const cvLink = document.getElementById('cvDownload');
+      if (cvLink) {
+        cvLink.href = lang === 'es' ? '/cv/stefano-delmonte-cv-es.pdf' : '/cv/stefano-delmonte-cv-en.pdf';
       }
       renderCopyButton();
     }
