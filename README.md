@@ -52,7 +52,7 @@ Cada push a `main` ejecuta el workflow `.github/workflows/deploy.yml`, que const
 ##  Autor
 
 **Stefano Delmonte** — Estudiante de DAM, La Salle Tarragona
- [stefanodelmonte.com](https://stefanodelmonte.com) · 💼 [LinkedIn](https://www.linkedin.com/in/delmontestefano/) · 🐙 [GitHub](https://github.com/stefanodelmonte)
+ [stefanodelmonte.com](https://stefanodelmonte.com) ·  [LinkedIn](https://www.linkedin.com/in/delmontestefano/) ·  [GitHub](https://github.com/stefanodelmonte)
 
 ##  Licencia
 
