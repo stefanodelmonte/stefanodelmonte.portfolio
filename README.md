@@ -2,58 +2,53 @@
 
 [![Astro](https://img.shields.io/badge/Astro-5.x-FF5D01?logo=astro&logoColor=white)](https://astro.build)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/stefanodelmonte/stefanodelmonte.portfolio/deploy.yml?label=deploy)](https://github.com/stefanodelmonte/stefanodelmonte.portfolio/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build) y desplegado automáticamente en GitHub Pages con dominio personalizado.
+Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build) y desplegado automáticamente en GitHub Pages.
 
- **Web en vivo:** [stefanodelmonte.com](https://stefanodelmonte.com)
+**→ [stefanodelmonte.com](https://stefanodelmonte.com)**
 
-##  Características
+## Características
 
--  **Bilingüe** (Español / English) con sistema i18n propio
--  **Astro** — sitio estático ultraligero, sin JS innecesario
--  **CV descargable** en PDF
--  **CI/CD** con GitHub Actions → despliegue automático a GitHub Pages
--  **CSS puro** — sin frameworks pesados
+- **Bilingüe** — cambio de idioma dinámico (ES/EN) sin recarga, con sistema i18n client-side
+- **Astro** — sitio estático, sin frameworks CSS ni JS innecesario
+- **CV descargable** — PDF disponible en ambos idiomas
+- **CI/CD** — deploy automático a GitHub Pages en cada push a `main`
+- **Responsive** — adaptado a móvil y escritorio
 
-## Estructura
+## Estructura del proyecto
 
 ```
-/
 ├── public/
-│   ├── cv/               # CV en PDF
-│   ├── img/              # Imágenes estáticas
-│   ├── CNAME             # Dominio personalizado
+│   ├── cv/                  # CV en PDF (ES/EN)
+│   ├── img/                 # Imágenes
+│   ├── CNAME                # Dominio personalizado
 │   └── favicon.svg
 ├── src/
-│   ├── i18n/             # Traducciones ES/EN
-│   ├── layouts/          # Layouts compartidos
-│   ├── pages/            # Rutas del sitio
-│   └── styles/           # Estilos globales
-├── .github/workflows/    # Deploy automático a GitHub Pages
-└── astro.config.mjs
+│   ├── layouts/             # Layout base (meta SEO, estructura HTML)
+│   ├── pages/               # Página principal
+│   └── styles/              # Estilos globales (CSS puro, variables, responsive)
+├── .github/workflows/       # GitHub Actions — build y deploy
+├── astro.config.mjs
+└── package.json
 ```
 
-##  Desarrollo local
+## Desarrollo local
 
-**Requisitos:** Node.js 18+ y npm.
+Requisitos: Node.js 18+ y npm.
 
 ```bash
 npm install          # Instalar dependencias
-npm run dev          # Servidor de desarrollo (http://localhost:4321)
+npm run dev          # Servidor de desarrollo (localhost:4321)
 npm run build        # Build de producción
 npm run preview      # Preview del build
 ```
 
-##  Despliegue
+## Despliegue
 
-Cada push a `main` ejecuta el workflow `.github/workflows/deploy.yml`, que construye el sitio y lo publica en GitHub Pages bajo el dominio `stefanodelmonte.com` (configurado vía `CNAME`).
+Cada push a `main` ejecuta el workflow de GitHub Actions que construye el sitio con Astro y lo publica en GitHub Pages bajo el dominio personalizado `stefanodelmonte.com`.
 
-##  Autor
+## Autor
 
-**Stefano Delmonte** — Estudiante de DAM, La Salle Tarragona
- [stefanodelmonte.com](https://stefanodelmonte.com) ·  [LinkedIn](https://www.linkedin.com/in/delmontestefano/) ·  [GitHub](https://github.com/stefanodelmonte)
+**Stefano Delmonte** — Estudiante de DAM · La Salle Tarragona
 
-##  Licencia
-
-MIT — ver [`LICENSE`](./LICENSE).
+[Web](https://stefanodelmonte.com) · [LinkedIn](https://www.linkedin.com/in/delmontestefano/) · [GitHub](https://github.com/stefanodelmonte)
