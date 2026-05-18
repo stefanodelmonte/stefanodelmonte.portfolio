@@ -1,12 +1,15 @@
+/* Fuentes: Sora para texto corrido, Space Mono para elementos de interfaz y código */
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
+/* ---- SISTEMA DE DISEÑO ---- */
+/* Tokens centralizados: cambiar un valor aquí lo propaga a todo el sitio */
 :root {
   --color-bg: #0a0a0a;
   --color-bg-secondary: #111111;
-  --color-surface: #161616;
+  --color-surface: #161616;        /* Superficie de tarjetas y elementos elevados */
   --color-border: #222222;
   --color-text: #e8e8e8;
-  --color-text-secondary: #888888;
+  --color-text-secondary: #888888; /* Texto de menor jerarquía: descripciones, labels */
   --color-accent: #3b82f6;
   --color-accent-hover: #60a5fa;
   --color-white: #ffffff;
@@ -76,6 +79,7 @@ nav {
   width: 100%;
   z-index: 100;
   background: rgba(10, 10, 10, 0.85);
+  /* -webkit- necesario para compatibilidad con Safari */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
@@ -325,7 +329,7 @@ section {
   color: var(--color-accent);
 }
 
-/* ---- PROJECTS ---- */
+/* ---- PROYECTOS ---- */
 
 .projects-list {
   display: flex;
@@ -346,6 +350,7 @@ section {
   border-color: var(--color-accent);
 }
 
+/* Los proyectos pares invierten el orden imagen/contenido para crear ritmo visual alternado */
 .project-row:nth-child(even) {
   flex-direction: row-reverse;
 }
@@ -560,7 +565,13 @@ footer p {
   color: var(--color-accent);
 }
 
-/* ---- SUBTLE BACKGROUND DOTS ---- */
+/* ---- FONDO ANIMADO DE PUNTOS ---- */
+/*
+ * Se generan dos capas de puntos con pseudo-elementos para crear profundidad.
+ * mix-blend-mode: screen hace que los puntos claros sobre fondo oscuro se vean
+ * tenues sin necesidad de reducir excesivamente la opacidad.
+ * pointer-events: none evita que interfieran con los clics del usuario.
+ */
 body::before,
 body::after {
   content: '';
@@ -570,12 +581,14 @@ body::after {
   z-index: 0;
   mix-blend-mode: screen;
 }
+/* Cuadrícula fina de puntos pequeños, animación más rápida */
 body::before {
   background-image: radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px);
   background-size: 26px 26px;
   opacity: 0.28;
   animation: dotsBlink 5.2s linear infinite;
 }
+/* Cuadrícula espaciada de puntos más grandes, desfasada para evitar sincronía */
 body::after {
   background-image: radial-gradient(rgba(255,255,255,0.45) 1px, transparent 1px);
   background-size: 48px 48px;
@@ -589,7 +602,7 @@ body::after {
   50% { opacity: 0.42; }
 }
 
-/* Make sure main content sits above the animated background */
+/* El contenido necesita z-index > 0 para situarse por encima de los pseudo-elementos del body */
 main, .container, header, section, footer, .hero {
   position: relative;
   z-index: 1;

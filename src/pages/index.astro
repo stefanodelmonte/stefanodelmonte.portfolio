@@ -172,7 +172,9 @@ import Layout from '../layouts/Layout.astro';
   </footer>
 
   <script>
-    // ---- i18n ----
+    // ---- SISTEMA DE INTERNACIONALIZACIÓN (i18n) ----
+    // Diccionario de traducciones indexado por idioma y clave.
+    // Cada elemento del DOM con data-i18n se actualiza dinámicamente al cambiar de idioma.
     const translations = {
       es: {
         'nav.about': 'Sobre mi',
@@ -226,50 +228,59 @@ import Layout from '../layouts/Layout.astro';
 
     let currentLang = 'es';
 
+    // Función separada porque el botón de copiar se reconstruye en dos situaciones:
+    // al cambiar de idioma (setLanguage) y al restaurarse tras copiar el email.
     function renderCopyButton() {
       const copyBtnEl = document.getElementById('copyEmailBtn');
       if (!copyBtnEl) return;
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-      copyBtnEl.innerHTML = svg + `<span class="copy-label">${translations[currentLang]['contact.copy']}</span>`;
-      copyBtnEl.setAttribute('aria-label', translations[currentLang]['contact.copy']);
+      const langData = translations[currentLang as keyof typeof translations];
+      copyBtnEl.innerHTML = svg + `<span class="copy-label">${langData['contact.copy']}</span>`;
+      copyBtnEl.setAttribute('aria-label', langData['contact.copy']);
     }
 
-    function setLanguage(lang) {
+    // Aplica el idioma seleccionado: actualiza el DOM, el atributo lang del documento,
+    // el enlace de descarga del CV y el texto del botón de idioma.
+    function setLanguage(lang: string) {
       currentLang = lang;
       document.documentElement.lang = lang;
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          el.textContent = translations[lang][key];
+        const langData = translations[lang as keyof typeof translations];
+        if (key && langData[key as keyof typeof langData]) {
+          el.textContent = langData[key as keyof typeof langData];
         }
       });
       const btn = document.getElementById('langToggle');
       if (btn) {
         btn.innerHTML = lang === 'es' ? '<span class="flag" aria-hidden>🇪🇸</span> <span class="lang-label">ES</span>' : '<span class="flag" aria-hidden>🇬🇧</span> <span class="lang-label">EN</span>';
       }
-      const cvLink = document.getElementById('cvDownload');
+      // El CV existe en dos versiones (ES/EN), el enlace cambia según el idioma activo
+      const cvLink = document.getElementById('cvDownload') as HTMLAnchorElement | null;
       if (cvLink) {
         cvLink.href = lang === 'es' ? '/cv/stefano-delmonte-cv-es.pdf' : '/cv/stefano-delmonte-cv-en.pdf';
       }
       renderCopyButton();
     }
 
-    // Initialize language button and translations
+    // Carga inicial con el idioma por defecto
     setLanguage(currentLang);
 
-    document.getElementById('langToggle').addEventListener('click', () => {
+    document.getElementById('langToggle')?.addEventListener('click', () => {
       setLanguage(currentLang === 'es' ? 'en' : 'es');
     });
 
-    // Copy email button
+    // ---- BOTÓN COPIAR EMAIL ----
     const copyBtn = document.getElementById('copyEmailBtn');
     if (copyBtn) {
       copyBtn.addEventListener('click', async () => {
         const email = copyBtn.getAttribute('data-email') || 'contactstefanodelmonte@gmail.com';
         try {
+          // Clipboard API es asíncrona y requiere contexto seguro (HTTPS o localhost)
           await navigator.clipboard.writeText(email);
           copyBtn.classList.add('copied');
-          copyBtn.innerHTML = `<span class="copy-label">${translations[currentLang]['contact.copied']}</span>`;
+          copyBtn.innerHTML = `<span class="copy-label">${translations[currentLang as keyof typeof translations]['contact.copied']}</span>`;
+          // Restaura el botón tras 1.8 segundos
           setTimeout(() => {
             copyBtn.classList.remove('copied');
             renderCopyButton();
@@ -280,16 +291,16 @@ import Layout from '../layouts/Layout.astro';
       });
     }
 
-    // ---- Mobile menu ----
+    // ---- MENÚ MÓVIL ----
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
 
-    menuToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-    });
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
 
-    // Close menu on link click
-    if (navLinks) {
+      // Cierra el menú al pulsar cualquier enlace de navegación
       navLinks.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
           navLinks.classList.remove('active');
