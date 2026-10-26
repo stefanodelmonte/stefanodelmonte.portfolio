@@ -18,8 +18,6 @@ export const en: Record<keyof typeof es, string> = {
   'nav.contact': 'Contact',
 
   'hero.title': 'Software developer',
-  'hero.location': 'Tarragona',
-  'hero.intro': 'Second-year Multiplatform App Development student at La Salle Tarragona. Looking for an internship.',
   'hero.cv': 'Download CV',
 
   'about.p1': "I'm training in Multiplatform Application Development, focusing on backend with Java and Spring Boot and on Android development with Kotlin.",
@@ -31,7 +29,6 @@ export const en: Record<keyof typeof es, string> = {
   'projects.stack': 'Stack',
   'projects.links': 'Links',
   'projects.code': 'Code',
-  'projects.private': 'Private code',
   'projects.onRequest': 'Code available on request',
   'projects.shared': 'Shared REST API',
 
@@ -51,6 +48,11 @@ export const en: Record<keyof typeof es, string> = {
   'android.solution': 'Native Kotlin app that consumes the same REST API as the backend, keeping business logic centralised on the server.',
   'android.placeholder': 'Screenshots coming soon',
   'android.mediaAlt': 'Screenshot of the library Android app',
+
+  'web.title': 'Personal portfolio',
+  'web.status': 'Live',
+  'web.problem': 'I needed my own space to present projects and skills, in two languages and fast to load.',
+  'web.solution': 'Bilingual static site with no page reloads, an interactive WebGL ink background and automatic deployment on every change.',
 
   'diagram.app': 'Android app',
   'diagram.db': 'Database',

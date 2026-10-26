@@ -236,22 +236,6 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   padding-bottom: clamp(4rem, 10vh, 7rem);
 }
 
-.hero-location {
-  display: flex;
-  align-items: center;
-  gap: .9rem;
-  color: var(--gray);
-  font-size: .85rem;
-  font-weight: 400;
-  letter-spacing: .12em;
-  margin-bottom: 1.75rem;
-}
-.rule {
-  width: 2.5rem;
-  height: 1px;
-  background: var(--gray);
-}
-
 .hero h1 {
   font-family: var(--font-serif);
   font-weight: 400;
@@ -265,13 +249,6 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   font-family: var(--font-serif);
   font-size: clamp(1.15rem, 3.4vw, 1.6rem);
   color: var(--ink);
-}
-
-.hero-intro {
-  margin-top: 1.5rem;
-  max-width: 30rem;
-  color: var(--gray);
-  font-weight: 400;
 }
 
 .hero-actions {

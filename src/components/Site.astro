@@ -13,7 +13,11 @@ const t = (key: Key) => translate(lang, key);
 const other: Lang = lang === 'es' ? 'en' : 'es';
 
 // Repos públicos; vacío muestra "Código disponible bajo petición"
-const repos = { api: '', android: '' };
+const repos = {
+  api: 'https://github.com/stefanodelmonte/biblioteca',
+  android: '',
+  portfolio: 'https://github.com/stefanodelmonte/stefanodelmonte.portfolio',
+};
 
 // Medios del mockup Android. Ejemplos:
 // { type: 'image', src: '/img/android/inicio.webp', width: 540, height: 1170 }
@@ -28,6 +32,7 @@ const stacks = {
   tpv: ['JavaScript', 'HTML', 'CSS', 'PWA', 'IndexedDB', 'WebUSB (ESC/POS)'],
   api: ['Java', 'Spring Boot', 'PostgreSQL', 'API REST'],
   android: ['Kotlin', 'Android', 'API REST'],
+  web: ['Astro', 'TypeScript', 'CSS', 'WebGL', 'GitHub Actions'],
 };
 
 const skills = [
@@ -84,10 +89,8 @@ const nav = [
   <!-- Hero -->
   <section class="hero wrap" aria-labelledby="hero-name">
     <div class="hero-text">
-      <p class="hero-location" data-reveal><span class="rule" aria-hidden="true"></span><span data-i18n="hero.location">{t('hero.location')}</span></p>
       <h1 id="hero-name" data-reveal>Stefano Delmonte</h1>
       <p class="hero-title" data-reveal data-i18n="hero.title">{t('hero.title')}</p>
-      <p class="hero-intro" data-reveal data-i18n="hero.intro">{t('hero.intro')}</p>
       <div class="hero-actions" data-reveal>
         <a id="cvDownload" class="btn" href={site.cv[lang]} download data-i18n="hero.cv">{t('hero.cv')}</a>
         <a class="text-link" href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
@@ -129,7 +132,6 @@ const nav = [
                 <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="tpv.problem">{t('tpv.problem')}</dd></div>
                 <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="tpv.solution">{t('tpv.solution')}</dd></div>
                 <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.tpv.join(' · ')}</dd></div>
-                <div><dt data-i18n="projects.links">{t('projects.links')}</dt><dd class="muted" data-i18n="projects.private">{t('projects.private')}</dd></div>
               </dl>
             </div>
           </details>
@@ -204,6 +206,27 @@ const nav = [
               </details>
             </li>
           </ol>
+        </li>
+
+        <li class="index-item" data-reveal>
+          <details>
+            <summary>
+              <span class="index-num">04</span>
+              <span class="index-title" data-i18n="web.title">{t('web.title')}</span>
+              <span class="index-status" data-i18n="web.status">{t('web.status')}</span>
+              <span class="index-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="index-body">
+              <dl class="project-facts">
+                <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="web.problem">{t('web.problem')}</dd></div>
+                <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="web.solution">{t('web.solution')}</dd></div>
+                <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.web.join(' · ')}</dd></div>
+                <div><dt data-i18n="projects.links">{t('projects.links')}</dt><dd>
+                  <a class="text-link" href={repos.portfolio} target="_blank" rel="noopener noreferrer" data-i18n="projects.code">{t('projects.code')}</a>
+                </dd></div>
+              </dl>
+            </div>
+          </details>
         </li>
       </ol>
     </div>

@@ -16,8 +16,6 @@ export const es = {
   'nav.contact': 'Contacto',
 
   'hero.title': 'Desarrollador de software',
-  'hero.location': 'Tarragona',
-  'hero.intro': 'Segundo curso de DAM en La Salle Tarragona. En busca de prácticas.',
   'hero.cv': 'Descargar CV',
 
   'about.p1': 'Me estoy formando en Desarrollo de Aplicaciones Multiplataforma, con foco en backend con Java y Spring Boot y en desarrollo Android con Kotlin.',
@@ -29,7 +27,6 @@ export const es = {
   'projects.stack': 'Stack',
   'projects.links': 'Enlaces',
   'projects.code': 'Código',
-  'projects.private': 'Código privado',
   'projects.onRequest': 'Código disponible bajo petición',
   'projects.shared': 'Comparten API REST',
 
@@ -49,6 +46,11 @@ export const es = {
   'android.solution': 'Aplicación nativa en Kotlin que consume la misma API REST del backend, con la lógica de negocio centralizada en el servidor.',
   'android.placeholder': 'Capturas próximamente',
   'android.mediaAlt': 'Captura de la app Android de la biblioteca',
+
+  'web.title': 'Portfolio personal',
+  'web.status': 'En línea',
+  'web.problem': 'Necesitaba un espacio propio para presentar proyectos y competencias, en dos idiomas y con carga rápida.',
+  'web.solution': 'Web estática bilingüe sin recargas, fondo de tinta interactivo en WebGL y despliegue automático en cada cambio.',
 
   'diagram.app': 'App Android',
   'diagram.db': 'Base de datos',
