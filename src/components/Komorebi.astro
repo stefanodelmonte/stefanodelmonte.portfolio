@@ -30,34 +30,49 @@
                  mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
     }
 
-    // Hoja lanceolada con borde difuso (sombra proyectada)
+    // Hoja lanceolada; c es el centro, size la media longitud
     float leaf(vec2 p, vec2 c, float ang, float size, float blur) {
       vec2 q = p - c;
       float cs = cos(ang), sn = sin(ang);
       q = vec2(cs * q.x + sn * q.y, -sn * q.x + cs * q.y) / size;
       float b = blur / size;
-      float f = abs(q.y) - 0.38 * (1.0 - q.x * q.x);
+      float f = abs(q.y) - 0.36 * (1.0 - q.x * q.x);
       return smoothstep(b, -b, f) * smoothstep(1.0 + b, 1.0 - b, abs(q.x));
     }
 
-    // Una capa de follaje: hojas repartidas en celdas, cada una con su vaivén
-    float canopy(vec2 p, float scale, float blur, float t, float seed) {
+    float seg(vec2 p, vec2 a, vec2 b) {
+      vec2 pa = p - a, ba = b - a;
+      return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
+    }
+
+    // Ramitas colgantes con hojas alternas que aletean; una por celda
+    float sprays(vec2 p, float scale, float blur, float t, float seed) {
       vec2 sp = p * scale;
       vec2 id = floor(sp);
       float m = 0.0;
       for (int j = -1; j <= 1; j++) {
         for (int i = -1; i <= 1; i++) {
           vec2 cid = id + vec2(float(i), float(j));
-          for (int k = 0; k < 2; k++) {
+          if (hash(cid + seed * 3.1) < 0.3) continue;
+          vec2 h = vec2(hash(cid + seed), hash(cid * 1.7 + seed));
+          float ph = hash(cid + seed * 2.0) * 6.2832;
+          vec2 base = cid + h * 0.6 + 0.2;
+          float near = exp(-dot(base / scale - u_mouse, base / scale - u_mouse) / 0.05);
+          float gust = 1.0 + 3.0 * near * u_stir;
+          float ang = -2.2 + (h.x - 0.5) * 1.6 + (sin(t * 0.6 + ph) * 0.08 + sin(t * 1.7 + ph * 1.4) * 0.03) * gust;
+          vec2 dir = vec2(cos(ang), sin(ang));
+          vec2 nrm = vec2(-dir.y, dir.x);
+          float len = 0.85 + 0.3 * h.y;
+          m = max(m, smoothstep(0.006 + blur * 1.5, 0.0, seg(sp, base, base + dir * len)) * 0.6);
+          for (int k = 0; k < 5; k++) {
             float fk = float(k);
-            vec2 h = vec2(hash(cid + seed + fk * 7.1), hash(cid * 1.7 + seed + fk * 3.3));
-            float ph = hash(cid + fk + seed * 2.0) * 6.2832;
-            vec2 c = cid + h;
-            float near = exp(-dot(c / scale - u_mouse, c / scale - u_mouse) / 0.05);
-            float sway = (sin(t * 0.7 + ph) * 0.07 + sin(t * 1.9 + ph * 1.3) * 0.025) * (1.0 + 3.0 * near * u_stir);
-            c += vec2(sway, sway * 0.4);
-            m = max(m, leaf(sp, c, h.x * 6.2832 + sway * 2.5, 0.38 + 0.26 * h.y, blur));
+            float side = mod(fk, 2.0) * 2.0 - 1.0;
+            float la = ang + side * 0.85 + sin(t * (2.2 + h.y) + ph + fk * 1.3) * 0.18 * gust;
+            vec2 c = base + dir * len * (0.22 + fk * 0.17) + nrm * side * 0.03;
+            float size = 0.13 + 0.05 * hash(cid + fk + seed);
+            m = max(m, leaf(sp, c + vec2(cos(la), sin(la)) * (size + 0.02), la, size, blur));
           }
+          m = max(m, leaf(sp, base + dir * (len + 0.15), ang, 0.15, blur));
         }
       }
       return m;
@@ -65,17 +80,16 @@
 
     void main() {
       vec2 uv = gl_FragCoord.xy / u_res;
-      // En vertical, hojas más pequeñas para que quepan más
+      // En vertical, ramitas más pequeñas para que quepan más
       vec2 p = uv * vec2(u_aspect, 1.0) * (u_aspect < 0.8 ? 1.6 : 1.0);
       float t = u_time;
 
-      // Copas agrupadas, más densas arriba a la derecha y abiertas hacia el texto
-      float lo = u_aspect < 0.8 ? 0.12 : 0.3;
-      float clump = smoothstep(lo, lo + 0.45, noise(p * 1.5 + vec2(t * 0.01, 0.0)));
-      float diag = smoothstep(0.35, 1.25, uv.x * 0.85 + uv.y * 0.75);
-      float far = canopy(p + vec2(t * 0.002, 0.0), 9.0, 0.32, t * 0.8, 1.0);
-      float near = canopy(p, 5.0, 0.07, t, 5.0);
-      float shade = max(far * 0.65, near) * clump * diag;
+      // Follaje más denso arriba a la derecha, abierto hacia el texto
+      float diag = smoothstep(0.3, 1.15, uv.x * 0.85 + uv.y * 0.75);
+      float clump = smoothstep(0.25, 0.7, noise(p * 1.3 + vec2(t * 0.01, 0.0)));
+      float far = sprays(p + vec2(t * 0.003, 0.0), 4.5, 0.09, t * 0.8, 1.0) * clump;
+      float near = sprays(p, 2.2, 0.02, t, 5.0);
+      float shade = max(far * 0.5, near) * diag;
 
       // Luz cálida que entra por la esquina
       float glow = 0.18 * smoothstep(1.5, 0.1, length((uv - vec2(1.05, 1.08)) * vec2(u_aspect, 1.0)));
@@ -139,7 +153,7 @@
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(u('u_res'), canvas.width, canvas.height);
       gl.uniform1f(u('u_aspect'), w / h);
-      gl.uniform1f(u('u_alpha'), w < 768 ? 0.15 : 0.17);
+      gl.uniform1f(u('u_alpha'), w < 768 ? 0.2 : 0.24);
     }
 
     function draw() {
