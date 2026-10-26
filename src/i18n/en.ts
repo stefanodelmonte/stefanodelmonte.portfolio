@@ -22,7 +22,6 @@ export const en: Record<keyof typeof es, string> = {
   'hero.location': 'Tarragona',
   'hero.intro': 'Second-year Multiplatform App Development student at La Salle Tarragona. Looking for an internship.',
   'hero.cv': 'Download CV (Spanish)',
-  'hero.photoAlt': 'Portrait of Stefano Delmonte',
 
   'about.p1': "I'm training in Multiplatform Application Development, focusing on backend with Java and Spring Boot and on Android development with Kotlin.",
   'about.p2': 'Before programming I worked in retail, customer service and tourism. That varied background gave me responsibility, adaptability and the habit of working in a team under pressure.',
@@ -67,8 +66,7 @@ export const en: Record<keyof typeof es, string> = {
   'lang.it': 'Italian',
   'lang.native': 'Native',
 
-  'contact.text': "If you're looking for an intern or want to talk about a project, write to me.",
-  'contact.send': 'Send email',
-  'contact.copy': 'Copy email',
+  'contact.email': 'Email',
+  'contact.copy': 'Copy',
   'contact.copied': 'Copied',
 };

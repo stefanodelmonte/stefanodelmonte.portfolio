@@ -20,7 +20,6 @@ export const es = {
   'hero.location': 'Tarragona',
   'hero.intro': 'Segundo curso de DAM en La Salle Tarragona. En busca de prácticas.',
   'hero.cv': 'Descargar CV',
-  'hero.photoAlt': 'Retrato de Stefano Delmonte',
 
   'about.p1': 'Me estoy formando en Desarrollo de Aplicaciones Multiplataforma, con foco en backend con Java y Spring Boot y en desarrollo Android con Kotlin.',
   'about.p2': 'Antes de programar trabajé en comercio, atención al cliente y turismo. De esa trayectoria diversa me llevo responsabilidad, capacidad de adaptación y la costumbre de trabajar en equipo bajo presión.',
@@ -65,8 +64,7 @@ export const es = {
   'lang.it': 'Italiano',
   'lang.native': 'Nativo',
 
-  'contact.text': 'Si buscas a alguien para prácticas o quieres comentar un proyecto, escríbeme.',
-  'contact.send': 'Enviar correo',
-  'contact.copy': 'Copiar correo',
+  'contact.email': 'Correo',
+  'contact.copy': 'Copiar',
   'contact.copied': 'Copiado',
 } as const;

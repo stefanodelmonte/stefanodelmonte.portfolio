@@ -31,6 +31,7 @@ const image = `${site.url}/img/profile.webp`;
   <!-- Elige idioma antes de pintar: preferencia guardada o idioma del navegador -->
   <script is:inline define:vars={{ pageLang: lang, paths: site.path }}>
     (function () {
+      document.documentElement.classList.add('js');
       if (/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent)) return;
       var stored = null;
       try { stored = localStorage.getItem('lang'); } catch (e) {}

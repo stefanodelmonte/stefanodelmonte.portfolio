@@ -1,5 +1,4 @@
 ---
-import SakuraCanvas from './SakuraCanvas.astro';
 import ScrollThread from './ScrollThread.astro';
 import { site, t as translate, type Lang, type Key } from '../i18n';
 
@@ -51,7 +50,6 @@ const nav = [
 ] as const;
 ---
 
-<SakuraCanvas />
 <div class="grain" aria-hidden="true"></div>
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">{t('a11y.skip')}</a>
@@ -88,28 +86,24 @@ const nav = [
   <!-- Hero -->
   <section class="hero wrap" aria-labelledby="hero-name">
     <div class="hero-text">
-      <p class="hero-location"><span class="rule" aria-hidden="true"></span><span data-i18n="hero.location">{t('hero.location')}</span></p>
-      <h1 id="hero-name">Stefano Delmonte</h1>
-      <p class="hero-title" data-i18n="hero.title">{t('hero.title')}</p>
-      <p class="hero-intro" data-i18n="hero.intro">{t('hero.intro')}</p>
-      <div class="hero-actions">
+      <p class="hero-location" data-reveal><span class="rule" aria-hidden="true"></span><span data-i18n="hero.location">{t('hero.location')}</span></p>
+      <h1 id="hero-name" data-reveal>Stefano Delmonte</h1>
+      <p class="hero-title" data-reveal data-i18n="hero.title">{t('hero.title')}</p>
+      <p class="hero-intro" data-reveal data-i18n="hero.intro">{t('hero.intro')}</p>
+      <div class="hero-actions" data-reveal>
         <a id="cvDownload" class="btn" href={site.cv[lang]} download data-i18n="hero.cv">{t('hero.cv')}</a>
         <a class="text-link" href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
         <a class="text-link" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </div>
-    <figure class="hero-photo">
-      <img src="/img/profile.webp" width="600" height="600" decoding="async" fetchpriority="high"
-           alt={t('hero.photoAlt')} data-i18n-attr="alt:hero.photoAlt" />
-    </figure>
   </section>
 
   <!-- 01 Sobre mí -->
   <section id="about" class="section wrap" aria-labelledby="about-title">
     <h2 id="about-title" class="section-label" data-i18n="nav.about">{t('nav.about')}</h2>
     <div class="section-body">
-      <p class="section-num" aria-hidden="true">01</p>
-      <div class="about-text">
+      <p class="section-num" aria-hidden="true" data-reveal>01</p>
+      <div class="about-text" data-reveal>
         <p class="lead" data-i18n="about.p1">{t('about.p1')}</p>
         <p data-i18n="about.p2">{t('about.p2')}</p>
         <p data-i18n="about.p3">{t('about.p3')}</p>
@@ -121,9 +115,9 @@ const nav = [
   <section id="projects" class="section wrap" aria-labelledby="projects-title">
     <h2 id="projects-title" class="section-label" data-i18n="nav.projects">{t('nav.projects')}</h2>
     <div class="section-body">
-      <p class="section-num" aria-hidden="true">02</p>
+      <p class="section-num" aria-hidden="true" data-reveal>02</p>
 
-      <article class="project project--wide">
+      <article data-reveal class="project project--wide">
         <header class="project-head">
           <p class="project-status" data-i18n="tpv.status">{t('tpv.status')}</p>
           <h3 data-i18n="tpv.title">{t('tpv.title')}</h3>
@@ -137,7 +131,7 @@ const nav = [
       </article>
 
       <div class="ecosystem">
-        <article class="project">
+        <article data-reveal class="project">
           <header class="project-head">
             <p class="project-status" data-i18n="api.status">{t('api.status')}</p>
             <h3 data-i18n="api.title">{t('api.title')}</h3>
@@ -154,11 +148,11 @@ const nav = [
           </dl>
         </article>
 
-        <div class="ecosystem-link">
+        <div class="ecosystem-link" data-reveal>
           <span data-i18n="projects.shared">{t('projects.shared')}</span>
         </div>
 
-        <article class="project">
+        <article data-reveal class="project">
           <header class="project-head">
             <p class="project-status" data-i18n="android.status">{t('android.status')}</p>
             <h3 data-i18n="android.title">{t('android.title')}</h3>
@@ -197,8 +191,8 @@ const nav = [
   <section id="skills" class="section wrap" aria-labelledby="skills-title">
     <h2 id="skills-title" class="section-label" data-i18n="nav.skills">{t('nav.skills')}</h2>
     <div class="section-body">
-      <p class="section-num" aria-hidden="true">03</p>
-      <div class="columns">
+      <p class="section-num" aria-hidden="true" data-reveal>03</p>
+      <div data-reveal class="columns">
         {skills.map((group) => (
           <div class="column">
             <h3 class="column-title" data-i18n={group.key}>{t(group.key)}</h3>
@@ -215,8 +209,8 @@ const nav = [
   <section id="education" class="section wrap" aria-labelledby="education-title">
     <h2 id="education-title" class="section-label" data-i18n="nav.education">{t('nav.education')}</h2>
     <div class="section-body">
-      <p class="section-num" aria-hidden="true">04</p>
-      <div class="columns columns--edu">
+      <p class="section-num" aria-hidden="true" data-reveal>04</p>
+      <div data-reveal class="columns columns--edu">
         <div class="column">
           <p class="edu-dates" data-i18n="education.dates">{t('education.dates')}</p>
           <h3 class="edu-degree" data-i18n="education.degree">{t('education.degree')}</h3>
@@ -243,16 +237,13 @@ const nav = [
   <section id="contact" class="section wrap" aria-labelledby="contact-title">
     <h2 id="contact-title" class="section-label" data-i18n="nav.contact">{t('nav.contact')}</h2>
     <div class="section-body">
-      <p class="section-num" aria-hidden="true">05</p>
-      <p class="contact-text" data-i18n="contact.text">{t('contact.text')}</p>
-      <p class="contact-email"><a href={`mailto:${site.email}`}>{site.email}</a></p>
-      <div class="contact-actions">
-        <a class="btn" href={`mailto:${site.email}`} data-i18n="contact.send">{t('contact.send')}</a>
-        <button id="copyEmailBtn" class="btn btn--ghost" type="button" aria-live="polite">
+      <p class="section-num" aria-hidden="true" data-reveal>05</p>
+      <div class="contact-row" data-reveal>
+        <span class="contact-key" data-i18n="contact.email">{t('contact.email')}</span>
+        <a class="contact-value" href={`mailto:${site.email}`}>{site.email}</a>
+        <button id="copyEmailBtn" class="text-action" type="button" aria-live="polite">
           <span data-i18n="contact.copy">{t('contact.copy')}</span>
         </button>
-        <a class="text-link" href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a class="text-link" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </div>
   </section>
@@ -268,8 +259,25 @@ const nav = [
   import { initI18n } from '../scripts/i18n';
   initI18n();
 
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Sin autoplay de vídeo si el usuario prefiere menos movimiento
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (reduced) {
     document.querySelectorAll('video').forEach((v) => { v.autoplay = false; v.pause(); });
+  }
+
+  // Entrada suave de cada bloque al llegar a la vista
+  const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  if (reduced || !('IntersectionObserver' in window)) {
+    items.forEach((el) => el.classList.add('is-visible'));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach((el) => io.observe(el));
   }
 </script>
