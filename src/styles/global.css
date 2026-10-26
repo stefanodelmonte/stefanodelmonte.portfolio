@@ -5,6 +5,7 @@
   --gray: #6E6259;
   --line: #D6CDBF;
   --accent: #A8402F;
+  --hanko: #7A4A30;
 
   --phone: #E9E3D8;
   --phone-screen: #E0D9CC;
@@ -135,11 +136,11 @@ button { font: inherit; color: inherit; }
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  background: var(--accent);
+  background: var(--hanko);
   color: var(--paper);
   text-decoration: none;
   border-radius: 3px;
-  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(244, 241, 234, .45);
+  box-shadow: inset 0 0 0 2px var(--hanko), inset 0 0 0 3px rgba(244, 241, 234, .45);
   transform: rotate(-2deg);
   font-family: var(--font-serif);
   font-weight: 500;
@@ -183,54 +184,34 @@ html[data-lang="en"] .lang-en { color: var(--ink); }
 html[data-lang="es"] .lang-toggle:hover .lang-es,
 html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
 
-.menu-toggle {
-  display: none;
-  width: 44px;
-  height: 44px;
-  margin-right: -10px;
-  padding: 0;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-}
-.menu-toggle span {
-  display: block;
-  width: 22px;
-  height: 1px;
-  background: var(--ink);
-  transition: transform .3s var(--ease);
-}
-.menu-toggle[aria-expanded="true"] span:first-child { transform: translateY(4px) rotate(45deg); }
-.menu-toggle[aria-expanded="true"] span:last-child { transform: translateY(-4px) rotate(-45deg); }
-
+/* Móvil: navegación en una segunda fila horizontal, desplazable */
 @media (max-width: 767px) {
-  .menu-toggle { display: flex; }
-  .site-nav {
-    display: none;
-    position: absolute;
-    top: var(--header-h);
-    left: 0;
-    right: 0;
-    background: var(--paper);
-    border-bottom: 1px solid var(--line);
+  :root { --header-h: 6.5rem; }
+  .header-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding-top: .75rem;
   }
-  .site-nav.is-open { display: block; }
+  .header-tools { display: contents; }
+  .lang-toggle { margin-left: auto; margin-right: -.25rem; }
+  .site-nav {
+    order: 3;
+    width: calc(100% + 2 * var(--gutter));
+    margin-inline: calc(-1 * var(--gutter));
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
   .site-nav ul {
-    flex-direction: column;
-    gap: 0;
-    padding: .5rem var(--gutter) 1.5rem;
+    gap: 1.4rem;
+    padding: .35rem var(--gutter) .3rem;
+    white-space: nowrap;
   }
   .site-nav a {
-    display: block;
-    padding: .8rem 0;
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    letter-spacing: 0;
-    border-bottom: 1px solid var(--line);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: .82rem;
   }
 }
 
@@ -642,24 +623,53 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
 }
 .contact-value:hover { color: var(--accent); }
 
-.text-action {
-  min-height: 44px;
+.contact-actions {
+  display: flex;
+  gap: .25rem;
+  margin-left: -10px;
+}
+
+/* Botones de icono: trazo fino, área táctil de 44px */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   padding: 0;
   background: none;
   border: 0;
-  cursor: pointer;
-  font-size: .85rem;
-  font-weight: 400;
+  border-radius: 50%;
   color: var(--gray);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: .35em;
+  cursor: pointer;
   transition: color .3s var(--ease);
 }
-.text-action:hover,
-.text-action.is-copied { color: var(--accent); }
+.icon-btn svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon-btn:hover,
+.icon-btn.is-copied { color: var(--accent); }
+.icon-btn .icon-check,
+.icon-btn.is-copied .icon-copy { display: none; }
+.icon-btn.is-copied .icon-check { display: block; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 
 @media (min-width: 640px) {
+  .contact-actions { margin-left: 0; margin-right: -10px; }
   .contact-row { grid-template-columns: 7.5rem minmax(0, 1fr) auto; }
 }
 

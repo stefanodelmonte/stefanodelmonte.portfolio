@@ -8,7 +8,6 @@ export const es = {
   'a11y.home': 'Inicio',
   'a11y.nav': 'Navegación principal',
   'a11y.lang': 'Cambiar idioma: castellano o inglés',
-  'a11y.menu': 'Abrir menú',
 
   'nav.about': 'Sobre mí',
   'nav.projects': 'Proyectos',
@@ -65,6 +64,7 @@ export const es = {
   'lang.native': 'Nativo',
 
   'contact.email': 'Correo',
-  'contact.copy': 'Copiar',
+  'contact.send': 'Enviar correo',
+  'contact.copy': 'Copiar correo',
   'contact.copied': 'Copiado',
 } as const;

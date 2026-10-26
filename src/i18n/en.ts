@@ -10,7 +10,6 @@ export const en: Record<keyof typeof es, string> = {
   'a11y.home': 'Home',
   'a11y.nav': 'Main navigation',
   'a11y.lang': 'Change language: Spanish or English',
-  'a11y.menu': 'Open menu',
 
   'nav.about': 'About',
   'nav.projects': 'Projects',
@@ -67,6 +66,7 @@ export const en: Record<keyof typeof es, string> = {
   'lang.native': 'Native',
 
   'contact.email': 'Email',
-  'contact.copy': 'Copy',
+  'contact.send': 'Send email',
+  'contact.copy': 'Copy email',
   'contact.copied': 'Copied',
 };

@@ -73,11 +73,6 @@ const nav = [
          aria-label={t('a11y.lang')} data-i18n-attr="aria-label:a11y.lang">
         <span class="lang-es" lang="es">ES</span><span class="lang-sep" aria-hidden="true">/</span><span class="lang-en" lang="en">EN</span>
       </a>
-
-      <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="siteNav"
-              aria-label={t('a11y.menu')} data-i18n-attr="aria-label:a11y.menu">
-        <span></span><span></span>
-      </button>
     </div>
   </div>
 </header>
@@ -241,9 +236,17 @@ const nav = [
       <div class="contact-row" data-reveal>
         <span class="contact-key" data-i18n="contact.email">{t('contact.email')}</span>
         <a class="contact-value" href={`mailto:${site.email}`}>{site.email}</a>
-        <button id="copyEmailBtn" class="text-action" type="button" aria-live="polite">
-          <span data-i18n="contact.copy">{t('contact.copy')}</span>
-        </button>
+        <div class="contact-actions">
+          <a class="icon-btn" href={`mailto:${site.email}`} title={t('contact.send')} data-i18n-attr="title:contact.send">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5" /></svg>
+            <span class="sr-only" data-i18n="contact.send">{t('contact.send')}</span>
+          </a>
+          <button id="copyEmailBtn" class="icon-btn" type="button" aria-live="polite" title={t('contact.copy')} data-i18n-attr="title:contact.copy">
+            <svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="1" /><path d="M15 9V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h4" /></svg>
+            <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+            <span class="sr-only" data-i18n="contact.copy">{t('contact.copy')}</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
