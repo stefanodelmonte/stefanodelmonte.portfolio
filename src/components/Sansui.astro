@@ -1,7 +1,7 @@
 <canvas id="sansui" class="sumi" aria-hidden="true"></canvas>
 
 <script>
-  // Sansui: capas de montañas a la aguada con niebla. Paralaje con el scroll y se desvanece al dejar el hero
+  // Sansui: montañas a pincel en una esquina, con bandas de niebla. Paralaje con el scroll y se desvanece al dejar el hero
   const VERT = `
     attribute vec2 a_pos;
     void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
@@ -44,31 +44,55 @@
     void main() {
       vec2 uv = gl_FragCoord.xy / u_res;
       float x = uv.x * u_aspect;
+      float t = u_time;
       vec4 acc = vec4(0.0);
 
+      // Composición a una esquina: las cordilleras nacen abajo a la derecha y dejan vacío el resto
+      // En vertical la pendiente es más suave para no formar paredes
+      bool narrow = u_aspect < 0.8;
+      float corner = smoothstep(narrow ? -0.3 : 0.3, 0.95, uv.x);
+      float sink = narrow ? 0.28 : 0.55;
+
       // De la capa más lejana a la más cercana
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 3; i++) {
         float fi = float(i);
-        float depth = (fi + 1.0) / 4.0;
-        float xs = x * (2.2 - fi * 0.4) + u_mx * 0.05 * depth + fi * 3.1;
-        // Picos altos a la derecha; a la izquierda, bajo el texto, colinas suaves
-        float amp = (0.36 - fi * 0.06) * mix(0.3, 1.15, smoothstep(0.1, 0.9, uv.x));
-        float ridge = ((0.4 - fi * 0.095) + (peaks(xs, fi * 13.7) - 0.35) * amp) * u_scale;
-        ridge -= (1.0 - smoothstep(0.0, 0.6, uv.x)) * 0.07 * u_scale;
-        ridge += u_scroll * (0.05 + 0.15 * depth);
+        float depth = (fi + 1.0) / 3.0;
+        float xs = x * (2.4 - fi * 0.5) + u_mx * 0.05 * depth + fi * 3.1;
+        float top = (0.46 - fi * 0.12) + (peaks(xs, fi * 13.7) - 0.35) * (0.34 - fi * 0.08);
+        top += (noise(vec2(x * 12.0, fi)) - 0.5) * 0.004; // detalle fino de la cresta
+        // Se hunde hacia la izquierda conservando el perfil
+        float ridge = (top - (1.0 - corner) * sink) * u_scale + u_scroll * (0.05 + 0.15 * depth);
 
         float below = ridge - uv.y;
         if (below > 0.0) {
-          // Oscura en la cresta y se funde en niebla hacia abajo, con textura de pincel seco
-          float d = exp(-below * (5.0 + fi * 2.5));
-          d *= 0.78 + 0.22 * noise(vec2(x * 30.0, uv.y * 30.0 + fi * 5.0));
-          d *= smoothstep(0.0, 0.003, below);
-          // Bancos de niebla que se desplazan despacio
-          float mist = smoothstep(0.45, 0.85, noise(vec2(x * 1.2 - u_time * (0.015 + fi * 0.006), uv.y * 5.0 + fi * 9.0)));
-          float a = d * (0.12 + fi * 0.08) * (1.0 - mist * 0.7);
+          // Contorno a pincel: grosor variable según la presión y cortes de pincel seco
+          float w = (0.004 + 0.016 * noise(vec2(x * 2.5, fi * 5.0))) * (0.7 + fi * 0.35);
+          float stroke = 1.0 - smoothstep(w * 0.4, w, below);
+          // Pincel seco: vetas a lo largo del trazo que se abren donde hay menos tinta
+          float streak = noise(vec2(x * 40.0 + fi * 11.0, below / w * 3.0));
+          float load = noise(vec2(x * 1.8 + fi * 4.0, 2.0));
+          float kasure = smoothstep(0.55 - load * 0.45, 0.75 - load * 0.35, streak);
+          float breaks = smoothstep(0.15, 0.35, noise(vec2(x * 2.2, fi * 7.3)));
+          stroke *= kasure * breaks;
+          // Aguada clara que se funde en el papel
+          float wash = exp(-below * (4.0 + fi * 3.0)) * (0.78 + 0.22 * noise(vec2(x * 25.0, uv.y * 25.0)));
+          float a = max(stroke * (0.3 + fi * 0.25), wash * (0.14 + fi * 0.07)) * smoothstep(0.0, 0.4, corner);
           acc = vec4(u_ink * a, a) + acc * (1.0 - a);
         }
       }
+
+      // Dos bandas de niebla horizontales y nítidas que cortan las montañas
+      for (int b = 0; b < 2; b++) {
+        float fb = float(b);
+        float cy = (0.2 + fb * 0.13) * u_scale + u_scroll * 0.12;
+        cy += (noise(vec2(x * 1.5 - t * 0.02, fb * 5.0)) - 0.5) * 0.02; // borde ondulado
+        float edge = 0.018 + 0.008 * noise(vec2(x * 3.0 + fb * 9.0, t * 0.04));
+        float band = 1.0 - smoothstep(edge * 0.45, edge, abs(uv.y - cy));
+        // Extremos irregulares que se desplazan muy despacio
+        float span = smoothstep(0.15, 0.4, noise(vec2(x * 0.9 - t * (0.012 + fb * 0.006), fb * 3.0 + 1.0)));
+        acc *= 1.0 - band * span * 0.85;
+      }
+
       gl_FragColor = acc * u_fade;
     }
   `;
@@ -109,8 +133,8 @@
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
-    // Tinta cálida, entre el negro y el marrón del sello
-    gl.uniform3f(u('u_ink'), 0.2, 0.17, 0.15);
+    // Tinta sumi neutra, apenas fría
+    gl.uniform3f(u('u_ink'), 0.1, 0.105, 0.115);
 
     let w = 0, h = 0, raf = 0, last = 0, t = 0;
     const mouse = { x: 0, target: 0 };
@@ -118,7 +142,7 @@
     function resize() {
       w = window.innerWidth;
       h = window.innerHeight;
-      const scale = w < 768 ? 0.6 : 0.75;
+      const scale = w < 768 ? 0.75 : 1;
       canvas.width = Math.max(2, Math.round(w * scale));
       canvas.height = Math.max(2, Math.round(h * scale));
       gl.viewport(0, 0, canvas.width, canvas.height);
