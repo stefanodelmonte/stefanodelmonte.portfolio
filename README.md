@@ -9,24 +9,27 @@ Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build)
 
 ## Características
 
-- **Bilingüe** — cambio de idioma dinámico (ES/EN) sin recarga, con sistema i18n client-side
-- **Astro** — sitio estático, sin frameworks CSS ni JS innecesario
-- **CV descargable** — PDF disponible en ambos idiomas
+- **Bilingüe** — `/` (ES) y `/en/` (EN) generadas en estático con sus metaetiquetas y Open Graph; el botón "ES / EN" cambia sin recarga y recuerda la elección
+- **Astro** — sitio estático, CSS puro, sin dependencias de UI
+- **Fondo animado** — pétalos en `<canvas>` sin librerías; respeta `prefers-reduced-motion`
 - **CI/CD** — deploy automático a GitHub Pages en cada push a `main`
-- **Responsive** — adaptado a móvil y escritorio
+- **Mobile-first** — accesible por teclado y con contraste AA
 
 ## Estructura del proyecto
 
 ```
 ├── public/
-│   ├── cv/                  # CV en PDF (ES/EN)
-│   ├── img/                 # Imágenes
+│   ├── cv/                  # CV en PDF
+│   ├── img/                 # Imágenes (img/android: capturas o WebM del mockup)
 │   ├── CNAME                # Dominio personalizado
 │   └── favicon.svg
 ├── src/
-│   ├── layouts/             # Layout base (meta SEO, estructura HTML)
-│   ├── pages/               # Página principal
-│   └── styles/              # Estilos globales (CSS puro, variables, responsive)
+│   ├── components/          # Site (contenido) y SakuraCanvas (animación)
+│   ├── i18n/                # Textos ES/EN y datos del sitio
+│   ├── layouts/             # Layout base (meta SEO, Open Graph, fuentes)
+│   ├── pages/               # / y /en/
+│   ├── scripts/             # Cambio de idioma en cliente
+│   └── styles/              # Estilos globales
 ├── .github/workflows/       # GitHub Actions — build y deploy
 ├── astro.config.mjs
 └── package.json

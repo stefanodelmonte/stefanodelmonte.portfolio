@@ -1,0 +1,272 @@
+---
+import SakuraCanvas from './SakuraCanvas.astro';
+import { site, t as translate, type Lang, type Key } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = (key: Key) => translate(lang, key);
+const other: Lang = lang === 'es' ? 'en' : 'es';
+
+// Repos públicos; vacío muestra "Código disponible bajo petición"
+const repos = { api: '', android: '' };
+
+// Medios del mockup Android. Ejemplos:
+// { type: 'image', src: '/img/android/inicio.webp', width: 540, height: 1170 }
+// { type: 'video', src: '/img/android/demo.webm', poster: '/img/android/poster.webp' }
+type Media =
+  | { type: 'none' }
+  | { type: 'image'; src: string; width: number; height: number }
+  | { type: 'video'; src: string; poster?: string };
+const androidMedia = { type: 'none' } as Media;
+
+const stacks = {
+  tpv: ['JavaScript', 'HTML', 'CSS', 'PWA', 'IndexedDB', 'WebUSB (ESC/POS)'],
+  api: ['Java', 'Spring Boot', 'PostgreSQL', 'API REST'],
+  android: ['Kotlin', 'Android', 'API REST'],
+};
+
+const skills = [
+  { key: 'skills.backend', items: ['Java', 'Kotlin', 'Spring Boot', 'PostgreSQL', 'SQL'] },
+  { key: 'skills.frontend', items: ['JavaScript', 'HTML', 'CSS'] },
+  { key: 'skills.tools', items: ['Git / GitHub', 'Google Workspace'] },
+] as const;
+
+const languages = [
+  { key: 'lang.es', level: 'lang.native' },
+  { key: 'lang.ca', level: 'lang.native' },
+  { key: 'lang.en', level: 'B2' },
+  { key: 'lang.it', level: 'B2' },
+] as const;
+
+const nav = [
+  { id: 'about', key: 'nav.about' },
+  { id: 'projects', key: 'nav.projects' },
+  { id: 'skills', key: 'nav.skills' },
+  { id: 'education', key: 'nav.education' },
+  { id: 'contact', key: 'nav.contact' },
+] as const;
+---
+
+<SakuraCanvas />
+<div class="grain" aria-hidden="true"></div>
+
+<a class="skip-link" href="#main" data-i18n="a11y.skip">{t('a11y.skip')}</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href={site.path[lang]} class="hanko" aria-label={t('a11y.home')} data-i18n-attr="aria-label:a11y.home">
+      <span aria-hidden="true">SD</span>
+    </a>
+
+    <div class="header-tools">
+      <nav id="siteNav" class="site-nav" aria-label={t('a11y.nav')} data-i18n-attr="aria-label:a11y.nav">
+        <ul>
+          {nav.map((item) => (
+            <li><a href={`#${item.id}`} data-i18n={item.key}>{t(item.key)}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <a id="langToggle" class="lang-toggle" href={site.path[other]} hreflang={other}
+         aria-label={t('a11y.lang')} data-i18n-attr="aria-label:a11y.lang">
+        <span class="lang-es" lang="es">ES</span><span class="lang-sep" aria-hidden="true">/</span><span class="lang-en" lang="en">EN</span>
+      </a>
+
+      <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="siteNav"
+              aria-label={t('a11y.menu')} data-i18n-attr="aria-label:a11y.menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- Hero -->
+  <section class="hero wrap" aria-labelledby="hero-name">
+    <div class="hero-text">
+      <p class="hero-location"><span class="rule" aria-hidden="true"></span><span data-i18n="hero.location">{t('hero.location')}</span></p>
+      <h1 id="hero-name">Stefano Delmonte</h1>
+      <p class="hero-title" data-i18n="hero.title">{t('hero.title')}</p>
+      <p class="hero-intro" data-i18n="hero.intro">{t('hero.intro')}</p>
+      <div class="hero-actions">
+        <a id="cvDownload" class="btn" href={site.cv[lang]} download data-i18n="hero.cv">{t('hero.cv')}</a>
+        <a class="text-link" href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a class="text-link" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+    <figure class="hero-photo">
+      <img src="/img/profile.webp" width="600" height="600" decoding="async" fetchpriority="high"
+           alt={t('hero.photoAlt')} data-i18n-attr="alt:hero.photoAlt" />
+    </figure>
+  </section>
+
+  <!-- 01 Sobre mí -->
+  <section id="about" class="section wrap" aria-labelledby="about-title">
+    <h2 id="about-title" class="section-label" data-i18n="nav.about">{t('nav.about')}</h2>
+    <div class="section-body">
+      <p class="section-num" aria-hidden="true">01</p>
+      <div class="about-text">
+        <p class="lead" data-i18n="about.p1">{t('about.p1')}</p>
+        <p data-i18n="about.p2">{t('about.p2')}</p>
+        <p data-i18n="about.p3">{t('about.p3')}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Proyectos -->
+  <section id="projects" class="section wrap" aria-labelledby="projects-title">
+    <h2 id="projects-title" class="section-label" data-i18n="nav.projects">{t('nav.projects')}</h2>
+    <div class="section-body">
+      <p class="section-num" aria-hidden="true">02</p>
+
+      <article class="project project--wide">
+        <header class="project-head">
+          <p class="project-status" data-i18n="tpv.status">{t('tpv.status')}</p>
+          <h3 data-i18n="tpv.title">{t('tpv.title')}</h3>
+        </header>
+        <dl class="project-facts">
+          <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="tpv.problem">{t('tpv.problem')}</dd></div>
+          <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="tpv.solution">{t('tpv.solution')}</dd></div>
+          <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.tpv.join(' · ')}</dd></div>
+          <div><dt data-i18n="projects.links">{t('projects.links')}</dt><dd class="muted" data-i18n="projects.private">{t('projects.private')}</dd></div>
+        </dl>
+      </article>
+
+      <div class="ecosystem">
+        <article class="project">
+          <header class="project-head">
+            <p class="project-status" data-i18n="api.status">{t('api.status')}</p>
+            <h3 data-i18n="api.title">{t('api.title')}</h3>
+          </header>
+          <dl class="project-facts">
+            <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="api.problem">{t('api.problem')}</dd></div>
+            <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="api.solution">{t('api.solution')}</dd></div>
+            <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.api.join(' · ')}</dd></div>
+            <div><dt data-i18n="projects.links">{t('projects.links')}</dt><dd>
+              {repos.api
+                ? <a class="text-link" href={repos.api} target="_blank" rel="noopener noreferrer" data-i18n="projects.code">{t('projects.code')}</a>
+                : <span class="muted" data-i18n="projects.onRequest">{t('projects.onRequest')}</span>}
+            </dd></div>
+          </dl>
+        </article>
+
+        <div class="ecosystem-link">
+          <span data-i18n="projects.shared">{t('projects.shared')}</span>
+        </div>
+
+        <article class="project">
+          <header class="project-head">
+            <p class="project-status" data-i18n="android.status">{t('android.status')}</p>
+            <h3 data-i18n="android.title">{t('android.title')}</h3>
+          </header>
+          <dl class="project-facts">
+            <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="android.problem">{t('android.problem')}</dd></div>
+            <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="android.solution">{t('android.solution')}</dd></div>
+            <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.android.join(' · ')}</dd></div>
+            <div><dt data-i18n="projects.links">{t('projects.links')}</dt><dd>
+              {repos.android
+                ? <a class="text-link" href={repos.android} target="_blank" rel="noopener noreferrer" data-i18n="projects.code">{t('projects.code')}</a>
+                : <span class="muted" data-i18n="projects.onRequest">{t('projects.onRequest')}</span>}
+            </dd></div>
+          </dl>
+          <div class="phone">
+            <div class="phone-screen">
+              {androidMedia.type === 'image' && (
+                <img src={androidMedia.src} width={androidMedia.width} height={androidMedia.height} loading="lazy" decoding="async"
+                     alt={t('android.mediaAlt')} data-i18n-attr="alt:android.mediaAlt" />
+              )}
+              {androidMedia.type === 'video' && (
+                <video src={androidMedia.src} poster={androidMedia.poster} autoplay muted loop playsinline preload="none"
+                       aria-label={t('android.mediaAlt')} data-i18n-attr="aria-label:android.mediaAlt"></video>
+              )}
+              {androidMedia.type === 'none' && (
+                <span class="phone-placeholder" data-i18n="android.placeholder">{t('android.placeholder')}</span>
+              )}
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Habilidades -->
+  <section id="skills" class="section wrap" aria-labelledby="skills-title">
+    <h2 id="skills-title" class="section-label" data-i18n="nav.skills">{t('nav.skills')}</h2>
+    <div class="section-body">
+      <p class="section-num" aria-hidden="true">03</p>
+      <div class="columns">
+        {skills.map((group) => (
+          <div class="column">
+            <h3 class="column-title" data-i18n={group.key}>{t(group.key)}</h3>
+            <ul class="plain-list">
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Formación e idiomas -->
+  <section id="education" class="section wrap" aria-labelledby="education-title">
+    <h2 id="education-title" class="section-label" data-i18n="nav.education">{t('nav.education')}</h2>
+    <div class="section-body">
+      <p class="section-num" aria-hidden="true">04</p>
+      <div class="columns columns--edu">
+        <div class="column">
+          <p class="edu-dates" data-i18n="education.dates">{t('education.dates')}</p>
+          <h3 class="edu-degree" data-i18n="education.degree">{t('education.degree')}</h3>
+          <p class="muted">La Salle Tarragona</p>
+        </div>
+        <div class="column">
+          <h3 class="column-title" data-i18n="education.languages">{t('education.languages')}</h3>
+          <ul class="plain-list lang-list">
+            {languages.map((l) => (
+              <li>
+                <span data-i18n={l.key}>{t(l.key)}</span>
+                {l.level === 'B2'
+                  ? <span class="muted">B2</span>
+                  : <span class="muted" data-i18n={l.level}>{t(l.level)}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Contacto -->
+  <section id="contact" class="section wrap" aria-labelledby="contact-title">
+    <h2 id="contact-title" class="section-label" data-i18n="nav.contact">{t('nav.contact')}</h2>
+    <div class="section-body">
+      <p class="section-num" aria-hidden="true">05</p>
+      <p class="contact-text" data-i18n="contact.text">{t('contact.text')}</p>
+      <p class="contact-email"><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <div class="contact-actions">
+        <a class="btn" href={`mailto:${site.email}`} data-i18n="contact.send">{t('contact.send')}</a>
+        <button id="copyEmailBtn" class="btn btn--ghost" type="button" aria-live="polite">
+          <span data-i18n="contact.copy">{t('contact.copy')}</span>
+        </button>
+        <a class="text-link" href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a class="text-link" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer wrap">
+  <p>&copy; 2026 Stefano Delmonte</p>
+</footer>
+
+<script>
+  import { initI18n } from '../scripts/i18n';
+  initI18n();
+
+  // Sin autoplay de vídeo si el usuario prefiere menos movimiento
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('video').forEach((v) => { v.autoplay = false; v.pause(); });
+  }
+</script>

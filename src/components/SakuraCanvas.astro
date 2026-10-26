@@ -1,0 +1,203 @@
+<canvas id="sakura" class="sakura" aria-hidden="true"></canvas>
+
+<script>
+  type State = 'fall' | 'land' | 'rest' | 'fade';
+
+  interface Layer { size: [number, number]; speed: [number, number]; alpha: number; blur: number; breeze: number }
+  interface Petal {
+    layer: number; x: number; y: number; size: number; vy: number; vx: number;
+    swayAmp: number; swayFreq: number; phase: number;
+    rot: number; rotSpeed: number; flip: number; flipSpeed: number;
+    alpha: number; state: State; timer: number; ground: number;
+  }
+
+  // Lejana, media y cercana
+  const LAYERS: Layer[] = [
+    { size: [10, 13], speed: [16, 26], alpha: 0.3, blur: 0.8, breeze: 0 },
+    { size: [13, 17], speed: [26, 38], alpha: 0.5, blur: 0.3, breeze: 0.35 },
+    { size: [17, 23], speed: [38, 56], alpha: 0.7, blur: 0, breeze: 1 },
+  ];
+  const COLOR = getComputedStyle(document.documentElement).getPropertyValue('--sakura').trim() || '#D8B4B0';
+  const FADE = 1.5;
+
+  // Pétalo unitario: base abajo, punta arriba con muesca
+  const PETAL = new Path2D(
+    'M0 0.5 C0.42 0.3 0.46 -0.22 0.13 -0.5 L0 -0.36 L-0.13 -0.5 C-0.46 -0.22 -0.42 0.3 0 0.5 Z'
+  );
+
+  const rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+  const canvas = document.getElementById('sakura') as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext('2d');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (canvas && ctx) {
+    let w = 0, h = 0, dpr = 1;
+    let petals: Petal[] = [];
+    let raf = 0, last = 0, t = 0;
+    const mouse = { x: -1e4, y: -1e4, vx: 0, vy: 0, at: 0 };
+
+    const targetCount = () =>
+      w < 768 ? Math.round(rand(6, 8)) : Math.min(18, Math.max(12, Math.round((w * h) / 95000)));
+
+    function spawn(p: Partial<Petal> = {}, initial = false): Petal {
+      // Más pétalos en capas lejanas
+      const r = Math.random();
+      const layer = r < 0.4 ? 0 : r < 0.75 ? 1 : 2;
+      const L = LAYERS[layer];
+      const size = rand(L.size[0], L.size[1]);
+      return {
+        layer, size,
+        x: rand(-0.05, 1.05) * w,
+        y: initial ? rand(-0.1, 0.9) * h : -size * 2,
+        vy: rand(L.speed[0], L.speed[1]),
+        vx: 0,
+        swayAmp: rand(14, 34) * (0.6 + layer * 0.25),
+        swayFreq: rand(0.5, 1.1),
+        phase: rand(0, Math.PI * 2),
+        rot: rand(0, Math.PI * 2),
+        rotSpeed: rand(-1.1, 1.1),
+        flip: rand(0, Math.PI * 2),
+        flipSpeed: rand(1.4, 3),
+        alpha: 1, state: 'fall', timer: 0,
+        ground: h - size * rand(0.25, 0.45),
+        ...p,
+      };
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas!.width = Math.round(w * dpr);
+      canvas!.height = Math.round(h * dpr);
+      const n = targetCount();
+      if (petals.length > n) petals.length = n;
+      while (petals.length < n) petals.push(spawn({}, true));
+      petals.forEach((p) => { p.ground = h - p.size * 0.35; if (p.state !== 'fall') p.y = p.ground; });
+    }
+
+    function update(p: Petal, dt: number) {
+      const L = LAYERS[p.layer];
+      if (p.state === 'fall') {
+        // Brisa del ratón sobre capas cercanas
+        if (L.breeze && performance.now() - mouse.at < 120) {
+          const dx = p.x - mouse.x, dy = p.y - mouse.y;
+          const d2 = dx * dx + dy * dy, R = 170;
+          if (d2 < R * R) {
+            const f = (1 - Math.sqrt(d2) / R) * L.breeze;
+            p.vx += mouse.vx * f * 9 * dt;
+            p.rotSpeed += mouse.vx * f * 0.0008;
+          }
+        }
+        p.vx *= Math.exp(-1.6 * dt);
+        const sway = Math.cos(t * p.swayFreq + p.phase) * p.swayAmp * p.swayFreq;
+        p.x += (sway + p.vx + 6) * dt;
+        p.y += p.vy * dt;
+        p.rot += p.rotSpeed * dt;
+        p.flip += p.flipSpeed * dt;
+        if (p.y >= p.ground) {
+          // Conserva la inercia lateral al posarse
+          p.y = p.ground;
+          p.vx = sway + p.vx;
+          p.state = 'land';
+        }
+      } else if (p.state === 'land') {
+        const k = Math.exp(-3.2 * dt);
+        p.vx *= k;
+        p.rotSpeed *= k;
+        p.flipSpeed *= k;
+        p.x += p.vx * dt;
+        p.rot += p.rotSpeed * dt;
+        p.flip += p.flipSpeed * dt;
+        if (Math.abs(p.vx) < 1.5) { p.state = 'rest'; p.timer = rand(3, 6); }
+      } else if (p.state === 'rest') {
+        p.timer -= dt;
+        if (p.timer <= 0) { p.state = 'fade'; p.timer = FADE; }
+      } else {
+        p.timer -= dt;
+        p.alpha = Math.max(0, p.timer / FADE);
+        if (p.timer <= 0) Object.assign(p, spawn({ layer: p.layer }));
+      }
+      if (p.x < -40) p.x = w + 30;
+      else if (p.x > w + 40) p.x = -30;
+    }
+
+    function draw() {
+      ctx!.setTransform(1, 0, 0, 1, 0, 0);
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
+      ctx!.fillStyle = COLOR;
+      for (let li = 0; li < LAYERS.length; li++) {
+        const L = LAYERS[li];
+        ctx!.filter = L.blur ? `blur(${L.blur * dpr}px)` : 'none';
+        for (const p of petals) {
+          if (p.layer !== li) continue;
+          // Volteo 3D: scaleX oscila entre -1 y 1
+          const sx = Math.cos(p.flip);
+          ctx!.globalAlpha = L.alpha * p.alpha * (0.75 + 0.25 * Math.abs(sx));
+          ctx!.setTransform(dpr, 0, 0, dpr, p.x * dpr, p.y * dpr);
+          ctx!.rotate(p.rot);
+          ctx!.scale(p.size * (Math.abs(sx) < 0.08 ? 0.08 * Math.sign(sx || 1) : sx), p.size);
+          ctx!.fill(PETAL);
+        }
+      }
+      ctx!.filter = 'none';
+      ctx!.globalAlpha = 1;
+    }
+
+    function frame(now: number) {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      t += dt;
+      for (const p of petals) update(p, dt);
+      draw();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (raf || reduced.matches || document.hidden) return;
+      canvas!.hidden = false;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function stop() {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(resize, 150);
+    }, { passive: true });
+
+    // Cambio de densidad de píxeles (mover ventana entre pantallas, zoom)
+    const watchDpr = () => {
+      matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addEventListener('change', () => { resize(); watchDpr(); }, { once: true });
+    };
+    watchDpr();
+
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+
+    reduced.addEventListener('change', () => {
+      if (reduced.matches) { stop(); ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.hidden = true; }
+      else start();
+    });
+
+    if (matchMedia('(pointer: fine)').matches) {
+      window.addEventListener('pointermove', (e) => {
+        const now = performance.now();
+        const dt = Math.max(now - mouse.at, 16);
+        mouse.vx = ((e.clientX - mouse.x) / dt) * 16;
+        mouse.vy = ((e.clientY - mouse.y) / dt) * 16;
+        if (now - mouse.at > 200) { mouse.vx = 0; mouse.vy = 0; }
+        mouse.x = e.clientX; mouse.y = e.clientY; mouse.at = now;
+      }, { passive: true });
+    }
+
+    resize();
+    if (reduced.matches) canvas.hidden = true;
+    else start();
+  }
+</script>

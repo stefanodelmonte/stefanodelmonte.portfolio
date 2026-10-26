@@ -1,44 +1,75 @@
 ---
 import '../styles/global.css';
+import { site, t, type Lang } from '../i18n';
 
 interface Props {
-  title: string;
+  lang: Lang;
 }
 
-const { title } = Astro.props;
-
-const siteUrl = 'https://stefanodelmonte.com';
-const description = 'Estudiante de Desarrollo de Aplicaciones Multiplataforma. Portfolio personal de Stefano Delmonte.';
+const { lang } = Astro.props;
+const other: Lang = lang === 'es' ? 'en' : 'es';
+const title = t(lang, 'meta.title');
+const description = t(lang, 'meta.description');
+const url = site.url + site.path[lang];
+const image = `${site.url}/img/profile.webp`;
 ---
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang={lang} data-lang={lang}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
   <meta name="description" content={description} />
+  <meta name="theme-color" content="#F4F1EA" />
+  <meta name="color-scheme" content="light" />
+  <link rel="canonical" href={url} />
+  <link rel="alternate" hreflang="es" href={site.url + site.path.es} />
+  <link rel="alternate" hreflang="en" href={site.url + site.path.en} />
+  <link rel="alternate" hreflang="x-default" href={site.url + site.path.es} />
 
-  <!-- Open Graph: controla cómo se previsualiza el enlace en LinkedIn, WhatsApp, etc. -->
+  <!-- Elige idioma antes de pintar: preferencia guardada o idioma del navegador -->
+  <script is:inline define:vars={{ pageLang: lang, paths: site.path }}>
+    (function () {
+      if (/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent)) return;
+      var stored = null;
+      try { stored = localStorage.getItem('lang'); } catch (e) {}
+      var nav = (navigator.language || '').toLowerCase();
+      var pref = stored || (/^(es|ca|gl|eu)/.test(nav) ? 'es' : 'en');
+      if (pref !== pageLang && paths[pref]) location.replace(paths[pref] + location.hash);
+    })();
+  </script>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Stefano Delmonte" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content={siteUrl} />
-  <meta property="og:image" content={`${siteUrl}/img/profile.webp`} />
+  <meta property="og:url" content={url} />
+  <meta property="og:locale" content={site.locale[lang]} />
+  <meta property="og:locale:alternate" content={site.locale[other]} />
+  <meta property="og:image" content={image} />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="600" />
+  <meta property="og:image:alt" content={t(lang, 'meta.imageAlt')} />
 
   <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={`${siteUrl}/img/profile.webp`} />
+  <meta name="twitter:image" content={image} />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <title>{title}</title>
 
-  <!-- Sin JS: el menú hamburguesa no funciona, así que se oculta y se muestran los enlaces directamente -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" />
+
+  <!-- Sin JS: menú visible y selector de idioma como enlace -->
   <noscript>
     <style>
       .menu-toggle { display: none !important; }
-      .nav-links { display: flex !important; position: static !important; flex-direction: row !important; background: none !important; padding: 0 !important; border: none !important; }
+      .site-nav { display: flex !important; position: static !important; }
     </style>
   </noscript>
 </head>
