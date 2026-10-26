@@ -1,7 +1,7 @@
 // Textos en castellano (idioma por defecto)
 export const es = {
   'meta.title': 'Stefano Delmonte · Desarrollador de software',
-  'meta.description': 'Portfolio de Stefano Delmonte, desarrollador de software en Tarragona. Backend con Java y Spring Boot, Android con Kotlin. En busca de prácticas.',
+  'meta.description': 'Portfolio de Stefano Delmonte, desarrollador de software. Backend con Java y Spring Boot, Android con Kotlin. En busca de prácticas.',
   'meta.imageAlt': 'Retrato de Stefano Delmonte',
 
   'a11y.skip': 'Saltar al contenido',
@@ -28,22 +28,21 @@ export const es = {
   'projects.links': 'Enlaces',
   'projects.code': 'Código',
   'projects.onRequest': 'Código disponible bajo petición',
-  'projects.shared': 'Comparten API REST',
 
   'tpv.title': 'Sistema TPV para pyme',
   'tpv.status': 'En producción',
   'tpv.problem': 'Una pyme necesitaba registrar ventas desde una tablet, emitir tickets al momento y conservar un histórico fiable sin trabajo manual.',
   'tpv.solution': 'Aplicación web de punto de venta en uso diario: venta desde tablet, integración con impresora térmica, gestión de devoluciones y exportación automática a Excel como copia de seguridad.',
 
-  'api.title': 'Biblioteca · Backend Spring Boot',
-  'api.status': 'Proyecto intermodular · DAM2',
-  'api.problem': 'La aplicación móvil de la biblioteca necesitaba una fuente de datos única para libros, usuarios y préstamos.',
-  'api.solution': 'API REST con Spring Boot que gestiona libros, usuarios y préstamos, con persistencia en PostgreSQL. Es la base que consume la app Android.',
+  'library.title': 'Biblioteca personal · Spring Boot',
+  'library.status': 'Proyecto final · DAM1',
+  'library.problem': 'Llevar un registro ordenado de los libros leídos, en curso y pendientes, con valoraciones y reseñas, sin depender de hojas de cálculo.',
+  'library.solution': 'Aplicación web MVC para registrar libros y lecturas con valoración y reseña, organizarlos por categorías y etiquetas, y consultar estadísticas: páginas leídas, media de valoraciones y libros por categoría.',
 
   'android.title': 'Biblioteca · App Android (Kotlin)',
   'android.status': 'En desarrollo · DAM2',
   'android.problem': 'Consultar el catálogo y gestionar préstamos desde el móvil, sin depender de un ordenador.',
-  'android.solution': 'Aplicación nativa en Kotlin que consume la misma API REST del backend, con la lógica de negocio centralizada en el servidor.',
+  'android.solution': 'Aplicación nativa en Kotlin que consume una API REST propia hecha con Spring Boot y PostgreSQL, con la lógica de negocio centralizada en el servidor.',
   'android.placeholder': 'Capturas próximamente',
   'android.mediaAlt': 'Captura de la app Android de la biblioteca',
 

@@ -1,0 +1,291 @@
+<canvas id="suminagashi" class="sumi" aria-hidden="true"></canvas>
+
+<script>
+  // Suminagashi: anillos de tinta flotando en agua. El puntero los arrastra y vuelven despacio a su forma
+  const VERT = `
+    attribute vec2 a_pos;
+    varying vec2 v_uv;
+    void main() { v_uv = a_pos * 0.5 + 0.5; gl_Position = vec4(a_pos, 0.0, 1.0); }
+  `;
+
+  const HEAD = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    varying vec2 v_uv;
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float noise(vec2 p) {
+      vec2 i = floor(p), f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                 mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+    }
+  `;
+
+  // Campo de desplazamiento (xy codificado en 0..1): empuje del puntero, suavizado y retorno a cero
+  const FLOW = HEAD + `
+    uniform sampler2D u_prev;
+    uniform vec2 u_texel;
+    uniform vec2 u_pos;
+    uniform vec2 u_vel;
+    uniform float u_radius;
+    uniform float u_aspect;
+    uniform float u_relax;
+    vec2 dec(vec2 uv) { return texture2D(u_prev, uv).xy * 2.0 - 1.0; }
+    void main() {
+      vec2 c = dec(v_uv);
+      vec2 avg = (dec(v_uv + vec2(u_texel.x, 0.0)) + dec(v_uv - vec2(u_texel.x, 0.0))
+                + dec(v_uv + vec2(0.0, u_texel.y)) + dec(v_uv - vec2(0.0, u_texel.y))) * 0.25;
+      c = mix(c, avg, 0.3);
+      vec2 d = (v_uv - u_pos) * vec2(u_aspect, 1.0);
+      c += u_vel * exp(-dot(d, d) / (u_radius * u_radius));
+      float m = length(c);
+      c *= m > 0.0 ? max(m - u_relax - m * 0.01, 0.0) / m : 0.0;
+      gl_FragColor = vec4(clamp(c, -1.0, 1.0) * 0.5 + 0.5, 0.0, 1.0);
+    }
+  `;
+
+  // Pintado: cada píxel toma los anillos de la gota dominante tras deformarse
+  const DROPS = 6;
+  const DRAW = HEAD + `
+    uniform sampler2D u_flow;
+    uniform vec2 u_res;
+    uniform float u_aspect;
+    uniform float u_px;
+    uniform vec4 u_drops[${DROPS}];
+    uniform vec3 u_ink;
+    uniform vec3 u_brown;
+    uniform float u_alpha;
+    void main() {
+      vec2 uv = gl_FragCoord.xy / u_res;
+      vec2 flow = (texture2D(u_flow, uv).xy * 2.0 - 1.0) * 0.12;
+      vec2 p = (uv - flow) * vec2(u_aspect, 1.0);
+      p += (vec2(noise(p * 3.0), noise(p * 3.0 + 7.3)) - 0.5) * 0.035;
+
+      float best = 1e3, rad = 1.0, freq = 1.0, idx = 0.0;
+      for (int i = 0; i < ${DROPS}; i++) {
+        vec4 d = u_drops[i];
+        float r = length(p - d.xy) / d.z;
+        if (r < best) { best = r; rad = d.z; freq = d.w; idx = float(i); }
+      }
+
+      float v = best * rad * freq;
+      float f = fract(v);
+      float dist = min(f, 1.0 - f) / freq * u_res.y;
+      float line = smoothstep(u_px * 1.1 + 0.6, u_px * 1.1 - 0.4, dist);
+      float brown = step(0.68, fract(floor(v) * 0.618 + idx * 0.37));
+      float fade = 1.0 - smoothstep(0.5, 1.0, best);
+      float a = line * fade * u_alpha * (brown > 0.5 ? 1.25 : 1.0);
+      gl_FragColor = vec4(mix(u_ink, u_brown, brown) * a, a);
+    }
+  `;
+
+  // Gotas en uv (x, y desde abajo), radio y anillos por unidad; lejos del texto principal
+  const DROP_LAYOUT = [
+    [0.93, 0.80, 0.42, 52],
+    [0.74, 0.08, 0.34, 64],
+    [0.04, 0.96, 0.30, 58],
+    [1.00, 0.36, 0.26, 70],
+    [0.34, -0.10, 0.30, 60],
+    [-0.05, 0.40, 0.24, 66],
+  ];
+
+  const STEP = 1000 / 30; // retorno en ~4 s con texturas de 8 bits
+  const RELAX = 2 / 255;
+  const IDLE_MS = 6000;
+
+  const hex = (v: string, fallback: number[]) => {
+    const m = v.trim().match(/^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+    return m ? m.slice(1).map((x) => parseInt(x, 16) / 255) : fallback;
+  };
+
+  const canvas = document.getElementById('suminagashi') as HTMLCanvasElement | null;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const gl = canvas?.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
+
+  if (canvas && gl) init(canvas, gl);
+  else if (canvas) canvas.hidden = true;
+
+  function init(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
+    const css = getComputedStyle(document.documentElement);
+    const ink = hex(css.getPropertyValue('--ink'), [0.12, 0.12, 0.12]);
+    const brown = hex(css.getPropertyValue('--hanko'), [0.48, 0.29, 0.19]);
+
+    function compile(type: number, src: string) {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || 'shader');
+      return s;
+    }
+    function program(frag: string) {
+      const p = gl.createProgram()!;
+      gl.attachShader(p, compile(gl.VERTEX_SHADER, VERT));
+      gl.attachShader(p, compile(gl.FRAGMENT_SHADER, frag));
+      gl.bindAttribLocation(p, 0, 'a_pos');
+      gl.linkProgram(p);
+      const u: Record<string, WebGLUniformLocation | null> = {};
+      const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+      for (let i = 0; i < n; i++) {
+        const name = gl.getActiveUniform(p, i)!.name.replace(/\[0\]$/, '');
+        u[name] = gl.getUniformLocation(p, name);
+      }
+      return { p, u };
+    }
+
+    let flowProg: ReturnType<typeof program>, drawProg: ReturnType<typeof program>;
+    try {
+      flowProg = program(FLOW);
+      drawProg = program(DRAW);
+    } catch {
+      canvas.hidden = true;
+      return;
+    }
+
+    const quad = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    let w = 0, h = 0, dpr = 1, flowW = 0, flowH = 0;
+    let targets: { tex: WebGLTexture; fb: WebGLFramebuffer }[] = [];
+    let read = 0;
+    let drops = new Float32Array(DROPS * 4);
+    let alpha = 0.2;
+
+    function makeTarget() {
+      const tex = gl.createTexture()!;
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, flowW, flowH, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      const fb = gl.createFramebuffer()!;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      gl.clearColor(0.5, 0.5, 0, 1); // desplazamiento cero
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      return { tex, fb };
+    }
+
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      flowW = Math.max(2, Math.round(w / 4));
+      flowH = Math.max(2, Math.round(h / 4));
+      targets.forEach((t) => { gl.deleteTexture(t.tex); gl.deleteFramebuffer(t.fb); });
+      targets = [makeTarget(), makeTarget()];
+      read = 0;
+      const aspect = w / h;
+      // En pantallas estrechas, gotas más pequeñas para dejar libre la zona de lectura
+      const scale = aspect < 0.8 ? 0.6 : 1;
+      alpha = aspect < 0.8 ? 0.15 : 0.2;
+      drops = new Float32Array(DROP_LAYOUT.flatMap(([x, y, r, f]) => [x * aspect, y, r * scale, f]));
+    }
+
+    const pen = { x: -1, y: -1, vx: 0, vy: 0, has: false };
+    let lastInput = 0, raf = 0, last = 0, acc = 0;
+
+    function flowStep() {
+      const src = targets[read], dst = targets[1 - read];
+      gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fb);
+      gl.viewport(0, 0, flowW, flowH);
+      gl.useProgram(flowProg.p);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, src.tex);
+      gl.uniform1i(flowProg.u.u_prev, 0);
+      gl.uniform2f(flowProg.u.u_texel, 1 / flowW, 1 / flowH);
+      gl.uniform2f(flowProg.u.u_pos, pen.x / w, 1 - pen.y / h);
+      gl.uniform2f(flowProg.u.u_vel, pen.has ? pen.vx : 0, pen.has ? pen.vy : 0);
+      gl.uniform1f(flowProg.u.u_radius, 0.09);
+      gl.uniform1f(flowProg.u.u_aspect, w / h);
+      gl.uniform1f(flowProg.u.u_relax, RELAX);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      read = 1 - read;
+      pen.has = false;
+      pen.vx = pen.vy = 0;
+    }
+
+    function render() {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.useProgram(drawProg.p);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, targets[read].tex);
+      gl.uniform1i(drawProg.u.u_flow, 0);
+      gl.uniform2f(drawProg.u.u_res, canvas.width, canvas.height);
+      gl.uniform1f(drawProg.u.u_aspect, w / h);
+      gl.uniform1f(drawProg.u.u_px, dpr);
+      gl.uniform4fv(drawProg.u.u_drops, drops);
+      gl.uniform3fv(drawProg.u.u_ink, ink);
+      gl.uniform3fv(drawProg.u.u_brown, brown);
+      gl.uniform1f(drawProg.u.u_alpha, alpha);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    function frame(now: number) {
+      acc += Math.min(now - last, 200);
+      last = now;
+      while (acc >= STEP) { acc -= STEP; flowStep(); }
+      render();
+      // Cuando los anillos han vuelto a su sitio se detiene el bucle
+      raf = now - lastInput < IDLE_MS ? requestAnimationFrame(frame) : 0;
+    }
+
+    function wake() {
+      lastInput = performance.now();
+      if (raf || document.hidden || reduced.matches) return;
+      last = performance.now();
+      acc = 0;
+      raf = requestAnimationFrame(frame);
+    }
+
+    // Acumula el movimiento hasta el siguiente paso de simulación
+    function move(x: number, y: number) {
+      if (pen.x >= 0) {
+        pen.vx = Math.max(-1, Math.min(1, pen.vx + ((x - pen.x) / h) * 6));
+        pen.vy = Math.max(-1, Math.min(1, pen.vy - ((y - pen.y) / h) * 6));
+        pen.has = true;
+      }
+      pen.x = x;
+      pen.y = y;
+      wake();
+    }
+
+    window.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'touch') move(e.clientX, e.clientY);
+    }, { passive: true });
+
+    // En táctil, deslizar el dedo remueve el agua aunque la página haga scroll
+    window.addEventListener('touchstart', (e) => { pen.x = e.touches[0].clientX; pen.y = e.touches[0].clientY; }, { passive: true });
+    window.addEventListener('touchmove', (e) => move(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
+      else if (performance.now() - lastInput < IDLE_MS) wake();
+    });
+
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => { resize(); render(); }, 150);
+    }, { passive: true });
+
+    // Con movimiento reducido los anillos quedan quietos
+    reduced.addEventListener('change', () => {
+      if (reduced.matches) { cancelAnimationFrame(raf); raf = 0; }
+    });
+
+    canvas.addEventListener('webglcontextlost', () => { cancelAnimationFrame(raf); raf = 0; canvas.hidden = true; });
+
+    resize();
+    render();
+  }
+</script>

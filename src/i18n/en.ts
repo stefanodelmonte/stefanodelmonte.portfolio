@@ -3,7 +3,7 @@ import type { es } from './es';
 // English texts; same keys as es.ts
 export const en: Record<keyof typeof es, string> = {
   'meta.title': 'Stefano Delmonte · Software developer',
-  'meta.description': 'Portfolio of Stefano Delmonte, software developer based in Tarragona. Backend with Java and Spring Boot, Android with Kotlin. Looking for an internship.',
+  'meta.description': 'Portfolio of Stefano Delmonte, software developer. Backend with Java and Spring Boot, Android with Kotlin. Looking for an internship.',
   'meta.imageAlt': 'Portrait of Stefano Delmonte',
 
   'a11y.skip': 'Skip to content',
@@ -30,22 +30,21 @@ export const en: Record<keyof typeof es, string> = {
   'projects.links': 'Links',
   'projects.code': 'Code',
   'projects.onRequest': 'Code available on request',
-  'projects.shared': 'Shared REST API',
 
   'tpv.title': 'POS system for a small business',
   'tpv.status': 'In production',
   'tpv.problem': 'A small business needed to record sales from a tablet, print receipts on the spot and keep a reliable sales history without manual work.',
   'tpv.solution': 'Point-of-sale web app in daily use: tablet checkout, thermal printer integration, returns management and automatic Excel export as a backup.',
 
-  'api.title': 'Library · Spring Boot backend',
-  'api.status': 'Cross-module project · DAM2',
-  'api.problem': "The library's mobile app needed a single data source for books, users and loans.",
-  'api.solution': 'REST API built with Spring Boot that manages books, users and loans, persisted in PostgreSQL. It is the backbone the Android app consumes.',
+  'library.title': 'Personal library · Spring Boot',
+  'library.status': 'Final project · DAM1',
+  'library.problem': 'Keep an organised record of books read, in progress and pending, with ratings and reviews, without relying on spreadsheets.',
+  'library.solution': 'MVC web app to register books and readings with ratings and reviews, organise them by categories and tags, and view reading stats: pages read, average rating and books per category.',
 
   'android.title': 'Library · Android app (Kotlin)',
   'android.status': 'In development · DAM2',
   'android.problem': 'Browse the catalogue and manage loans from a phone, without needing a computer.',
-  'android.solution': 'Native Kotlin app that consumes the same REST API as the backend, keeping business logic centralised on the server.',
+  'android.solution': 'Native Kotlin app that consumes its own REST API built with Spring Boot and PostgreSQL, keeping business logic centralised on the server.',
   'android.placeholder': 'Screenshots coming soon',
   'android.mediaAlt': 'Screenshot of the library Android app',
 

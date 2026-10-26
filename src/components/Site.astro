@@ -1,7 +1,7 @@
 ---
 import ScrollThread from './ScrollThread.astro';
 import EcosystemDiagram from './EcosystemDiagram.astro';
-import SumiInk from './SumiInk.astro';
+import Suminagashi from './Suminagashi.astro';
 import { site, t as translate, type Lang, type Key } from '../i18n';
 
 interface Props {
@@ -14,7 +14,7 @@ const other: Lang = lang === 'es' ? 'en' : 'es';
 
 // Repos públicos; vacío muestra "Código disponible bajo petición"
 const repos = {
-  api: 'https://github.com/stefanodelmonte/biblioteca',
+  library: 'https://github.com/stefanodelmonte/biblioteca',
   android: '',
   portfolio: 'https://github.com/stefanodelmonte/stefanodelmonte.portfolio',
 };
@@ -30,7 +30,7 @@ const androidMedia = { type: 'none' } as Media;
 
 const stacks = {
   tpv: ['JavaScript', 'HTML', 'CSS', 'PWA', 'IndexedDB', 'WebUSB (ESC/POS)'],
-  api: ['Java', 'Spring Boot', 'PostgreSQL', 'API REST'],
+  library: ['Java 21', 'Spring Boot', 'JPA / Hibernate', 'MySQL', 'Thymeleaf', 'Maven'],
   android: ['Kotlin', 'Android', 'API REST'],
   web: ['Astro', 'TypeScript', 'CSS', 'WebGL', 'GitHub Actions'],
 };
@@ -57,7 +57,7 @@ const nav = [
 ] as const;
 ---
 
-<SumiInk />
+<Suminagashi />
 <div class="grain" aria-hidden="true"></div>
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">{t('a11y.skip')}</a>
@@ -137,27 +137,22 @@ const nav = [
           </details>
         </li>
 
-        <!-- Ecosistema: 02 y 03 comparten la API -->
-        <li class="index-group">
-          <p class="index-group-label" data-reveal data-i18n="projects.shared">{t('projects.shared')}</p>
-          <ol class="index-sub">
             <li class="index-item" data-reveal>
               <details>
                 <summary>
                   <span class="index-num">02</span>
-                  <span class="index-title" data-i18n="api.title">{t('api.title')}</span>
-                  <span class="index-status" data-i18n="api.status">{t('api.status')}</span>
+                  <span class="index-title" data-i18n="library.title">{t('library.title')}</span>
+                  <span class="index-status" data-i18n="library.status">{t('library.status')}</span>
                   <span class="index-toggle" aria-hidden="true"></span>
                 </summary>
                 <div class="index-body">
-                  <EcosystemDiagram lang={lang} active="api" />
                   <dl class="project-facts">
-                    <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="api.problem">{t('api.problem')}</dd></div>
-                    <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="api.solution">{t('api.solution')}</dd></div>
-                    <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.api.join(' · ')}</dd></div>
+                    <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n="library.problem">{t('library.problem')}</dd></div>
+                    <div><dt data-i18n="projects.solution">{t('projects.solution')}</dt><dd data-i18n="library.solution">{t('library.solution')}</dd></div>
+                    <div><dt data-i18n="projects.stack">{t('projects.stack')}</dt><dd class="stack">{stacks.library.join(' · ')}</dd></div>
                     <div><dt data-i18n="projects.links">{t('projects.links')}</dt><dd>
-                      {repos.api
-                        ? <a class="text-link" href={repos.api} target="_blank" rel="noopener noreferrer" data-i18n="projects.code">{t('projects.code')}</a>
+                      {repos.library
+                        ? <a class="text-link" href={repos.library} target="_blank" rel="noopener noreferrer" data-i18n="projects.code">{t('projects.code')}</a>
                         : <span class="muted" data-i18n="projects.onRequest">{t('projects.onRequest')}</span>}
                     </dd></div>
                   </dl>
@@ -205,8 +200,6 @@ const nav = [
                 </div>
               </details>
             </li>
-          </ol>
-        </li>
 
         <li class="index-item" data-reveal>
           <details>
