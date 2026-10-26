@@ -388,6 +388,35 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   #contact .section-body { padding-left: 22%; }
 }
 
+/* ---- Hilo de scroll ---- */
+.thread {
+  position: absolute;
+  width: 1px;
+  background: var(--line);
+  pointer-events: none;
+}
+.thread-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.thread-tick {
+  position: absolute;
+  left: -3px;
+  width: 7px;
+  height: 1px;
+  background: var(--line);
+  transition: background-color .4s var(--ease);
+}
+.thread-tick.is-reached { background: var(--ink); }
+
+/* En móvil la marca se leería como un guion junto al número */
+@media (max-width: 767px) {
+  .thread-tick { display: none; }
+}
+
 /* ---- Sobre mí ---- */
 .about-text {
   max-width: 38rem;

@@ -1,5 +1,6 @@
 ---
 import SakuraCanvas from './SakuraCanvas.astro';
+import ScrollThread from './ScrollThread.astro';
 import { site, t as translate, type Lang, type Key } from '../i18n';
 
 interface Props {
@@ -255,6 +256,8 @@ const nav = [
       </div>
     </div>
   </section>
+
+  <ScrollThread />
 </main>
 
 <footer class="site-footer wrap">

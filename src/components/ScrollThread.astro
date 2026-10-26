@@ -1,0 +1,68 @@
+<!-- Hilo que une las secciones 01–05 y se dibuja con el scroll -->
+<div id="thread" class="thread" aria-hidden="true">
+  <span class="thread-fill"></span>
+</div>
+
+<script>
+  const thread = document.getElementById('thread');
+  const fill = thread?.querySelector<HTMLElement>('.thread-fill');
+  const main = thread?.parentElement;
+  const nums = [...document.querySelectorAll<HTMLElement>('.section-num')];
+
+  if (thread && fill && main && nums.length > 1) {
+    let start = 0, length = 0, ticking = false;
+    const ticks = nums.map(() => {
+      const t = document.createElement('span');
+      t.className = 'thread-tick';
+      thread.appendChild(t);
+      return t;
+    });
+    let tickY: number[] = [];
+
+    // Posición relativa a <main>
+    const rel = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      const m = main.getBoundingClientRect();
+      return { top: r.top - m.top, left: r.left - m.left, right: r.right - m.left, height: r.height };
+    };
+
+    function layout() {
+      const first = rel(nums[0]);
+      const lastNum = rel(nums[nums.length - 1]);
+      start = first.top + first.height / 2;
+      length = lastNum.top + lastNum.height / 2 - start;
+
+      // A la derecha de las etiquetas verticales; en móvil, en el margen
+      const section = nums[0].closest('.section')!;
+      const label = section.querySelector('.section-label')!;
+      const wide = getComputedStyle(label).writingMode.startsWith('vertical');
+      const s = rel(section);
+      const x = wide
+        ? rel(label).right + parseFloat(getComputedStyle(section).columnGap) / 2
+        : s.left + parseFloat(getComputedStyle(section).paddingLeft) / 2;
+
+      thread!.style.top = `${start}px`;
+      thread!.style.height = `${length}px`;
+      thread!.style.left = `${Math.round(x)}px`;
+      tickY = nums.map((n) => { const r = rel(n); return r.top + r.height / 2 - start; });
+      ticks.forEach((t, i) => { t.style.top = `${tickY[i]}px`; });
+      update();
+    }
+
+    function update() {
+      ticking = false;
+      const anchor = window.innerHeight * 0.55 - (main!.getBoundingClientRect().top + start);
+      const done = Math.min(Math.max(anchor, 0), length);
+      fill!.style.transform = `scaleY(${length ? done / length : 0})`;
+      ticks.forEach((t, i) => t.classList.toggle('is-reached', done >= tickY[i] - 1));
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+
+    new ResizeObserver(layout).observe(main);
+    document.fonts?.ready.then(layout);
+    layout();
+  }
+</script>
