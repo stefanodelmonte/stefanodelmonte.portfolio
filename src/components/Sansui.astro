@@ -1,7 +1,7 @@
 <canvas id="sansui" class="sumi" aria-hidden="true"></canvas>
 
 <script>
-  // Sansui: montañas a pincel en una esquina que se pintan al cargar, con niebla. Al bajar, la niebla las cubre
+  // Sansui: montañas a pincel en una esquina que se pintan al cargar. Al bajar, la niebla las cubre
   const VERT = `
     attribute vec2 a_pos;
     void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
@@ -106,36 +106,6 @@
           float a = max(stroke * (0.3 + fi * 0.25), wash * (0.14 + fi * 0.07)) * edgeFade;
           acc = vec4(u_ink * a, a) + acc * (1.0 - a);
         }
-
-        // Puntos de musgo (ten) sobre las crestas media y cercana, al terminar el trazo
-        if (fi > 0.5) {
-          float cellW = 0.011;
-          float id = floor(x / cellW);
-          // Escasos y agrupados, como toques sueltos del pincel
-          if (hash(vec2(id, fi * 7.0)) > 0.78 && noise(vec2(id * 0.35, fi * 4.0)) > 0.5) {
-            float dx = (id + 0.25 + 0.5 * hash(vec2(id, fi + 3.0))) * cellW;
-            float dy = ridgeAt(dx, fi) + 0.002 + 0.004 * hash(vec2(id, fi + 5.0));
-            float r = 0.0022 + 0.0018 * hash(vec2(id, fi + 9.0));
-            float d = length(vec2((x - dx) / 0.8, uv.y - dy));
-            float dcx = cornerX(dx);
-            float gate = smoothstep(0.45, 0.7, dcx) * smoothstep(0.85, 1.0, lp);
-            float a = (1.0 - smoothstep(r * 0.6, r, d)) * 0.6 * gate;
-            acc = vec4(u_ink * a, a) + acc * (1.0 - a);
-          }
-        }
-      }
-
-      // Dos bandas de niebla horizontales y nítidas que cortan las montañas
-      for (int b = 0; b < 2; b++) {
-        float fb = float(b);
-        float cy = (0.2 + fb * 0.13) * u_scale + u_scroll * 0.12;
-        cy += (noise(vec2(x * 1.5 - t * 0.02, fb * 5.0)) - 0.5) * 0.02; // borde ondulado
-        float edge = (0.018 + 0.008 * noise(vec2(x * 3.0 + fb * 9.0, t * 0.04))) * (1.0 + u_veil * 5.0);
-        float band = 1.0 - smoothstep(edge * 0.45, edge, abs(uv.y - cy));
-        // Extremos irregulares que se desplazan muy despacio
-        float span = smoothstep(0.15, 0.4, noise(vec2(x * 0.9 - t * (0.012 + fb * 0.006), fb * 3.0 + 1.0)));
-        span = mix(span, 1.0, u_veil);
-        acc *= 1.0 - band * span * 0.85;
       }
 
       // Al bajar, la niebla sube desde abajo y se traga las montañas

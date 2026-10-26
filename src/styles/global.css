@@ -4,7 +4,7 @@
   --ink: #1E1E1E;
   --gray: #616161;
   --line: #D6CDBF;
-  --accent: #A8402F; /* bermellón: logo y sello, menos del 5 % */
+  --accent: #A8402F; /* bermellón: logo, sello y números de sección; menos del 5 % */
 
   --phone: #E9E3D8;
   --phone-screen: #E0D9CC;
@@ -369,7 +369,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   font-weight: 400;
   font-size: clamp(2.5rem, 7vw, 3.75rem);
   line-height: 1;
-  color: var(--gray);
+  color: var(--accent);
   margin-bottom: clamp(2rem, 5vw, 3.5rem);
 }
 

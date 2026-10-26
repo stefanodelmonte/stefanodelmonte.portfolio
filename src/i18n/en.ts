@@ -4,7 +4,7 @@ import type { es } from './es';
 export const en: Record<keyof typeof es, string> = {
   'meta.title': 'Stefano Delmonte · Software developer',
   'meta.description': 'Portfolio of Stefano Delmonte, software developer. Backend with Java and Spring Boot, Android with Kotlin. Looking for an internship.',
-  'meta.imageAlt': 'Portrait of Stefano Delmonte',
+  'meta.imageAlt': 'Stefano Delmonte, software developer, beside ink-painted mountains and a red seal',
 
   'a11y.skip': 'Skip to content',
   'a11y.home': 'Home',

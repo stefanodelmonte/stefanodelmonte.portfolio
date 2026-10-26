@@ -36,6 +36,8 @@ export function applyLang(lang: Lang) {
   setMeta('meta[property="og:url"]', site.url + site.path[lang]);
   setMeta('meta[property="og:locale"]', site.locale[lang]);
   setMeta('meta[property="og:locale:alternate"]', site.locale[other]);
+  setMeta('meta[property="og:image"]', `${site.url}/img/og-${lang}.png`);
+  setMeta('meta[name="twitter:image"]', `${site.url}/img/og-${lang}.png`);
   setMeta('meta[property="og:image:alt"]', d['meta.imageAlt']);
   setMeta('meta[name="twitter:title"]', d['meta.title']);
   setMeta('meta[name="twitter:description"]', d['meta.description']);

@@ -2,7 +2,7 @@
 export const es = {
   'meta.title': 'Stefano Delmonte · Desarrollador de software',
   'meta.description': 'Portfolio de Stefano Delmonte, desarrollador de software. Backend con Java y Spring Boot, Android con Kotlin. En busca de prácticas.',
-  'meta.imageAlt': 'Retrato de Stefano Delmonte',
+  'meta.imageAlt': 'Stefano Delmonte, desarrollador de software, junto a unas montañas a tinta y un sello rojo',
 
   'a11y.skip': 'Saltar al contenido',
   'a11y.home': 'Inicio',
