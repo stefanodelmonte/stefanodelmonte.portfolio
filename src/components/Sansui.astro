@@ -125,7 +125,11 @@
   const gl = canvas?.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
 
   if (canvas && gl) init(canvas, gl);
-  else if (canvas) canvas.hidden = true;
+  else {
+    if (canvas) canvas.hidden = true;
+    // Sin fondo el sello aparece directamente
+    document.querySelector('.seal')?.classList.add('is-stamped');
+  }
 
   function init(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
     function compile(type: number, src: string) {
@@ -142,6 +146,7 @@
       gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
     } catch {
       canvas.hidden = true;
+      document.querySelector('.seal')?.classList.add('is-stamped');
       return;
     }
     gl.bindAttribLocation(prog, 0, 'a_pos');

@@ -58,7 +58,6 @@ const nav = [
 ---
 
 <Sansui />
-<div class="seal" aria-hidden="true"><span>S</span><span>D</span></div>
 <div class="grain" aria-hidden="true"></div>
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">{t('a11y.skip')}</a>
@@ -90,7 +89,7 @@ const nav = [
   <!-- Hero -->
   <section class="hero wrap" aria-labelledby="hero-name">
     <div class="hero-text">
-      <h1 id="hero-name" data-reveal>Stefano Delmonte</h1>
+      <h1 id="hero-name" data-reveal>Stefano <span class="nowrap">Delmonte<span class="seal-anchor" aria-hidden="true"><span class="seal"><span>S</span><span>D</span></span></span></span></h1>
       <p class="hero-title" data-reveal data-i18n="hero.title">{t('hero.title')}</p>
       <div class="hero-actions" data-reveal>
         <a id="cvDownload" class="btn" href={site.cv[lang]} download data-i18n="hero.cv">{t('hero.cv')}</a>

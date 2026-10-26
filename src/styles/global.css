@@ -101,41 +101,6 @@ button { font: inherit; color: inherit; }
   pointer-events: none;
 }
 
-/* Sello rojo de la pintura, como la firma de un pintor; se va con la niebla */
-.seal {
-  position: fixed;
-  right: max(var(--gutter), 6vw);
-  bottom: 60vh;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 2.1rem;
-  padding: .35rem 0;
-  background: var(--accent);
-  color: var(--paper);
-  border-radius: 2px;
-  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(244, 241, 234, .4);
-  transform: rotate(-2deg) scale(1.35);
-  font-family: var(--font-serif);
-  font-weight: 500;
-  font-size: .9rem;
-  line-height: 1.15;
-  opacity: 0;
-  pointer-events: none;
-}
-/* Se estampa al terminar de pintar las montañas; solo si el fondo existe */
-.seal.is-stamped {
-  opacity: var(--mountains, 0);
-  transform: rotate(-2deg) scale(1);
-  transition: opacity .3s ease-out, transform .45s cubic-bezier(.3, 1.6, .5, 1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .seal.is-stamped { transition: none; }
-}
-@media (max-aspect-ratio: 4/5) {
-  .seal { bottom: 38svh; }
-}
-
 .skip-link, .site-header, main, .site-footer { position: relative; z-index: 2; }
 
 /* ---- Layout ---- */
@@ -290,6 +255,48 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   font-size: clamp(2.6rem, 11vw, 6rem);
   line-height: 1.04;
   letter-spacing: -.01em;
+}
+
+.nowrap { white-space: nowrap; }
+
+/* Sello rojo como firma: punto de anclaje justo tras la última «e», a la altura de la x */
+.seal-anchor {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: .06em;
+  vertical-align: .44em;
+}
+.seal {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  padding: .35rem 0;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(244, 241, 234, .4);
+  transform-origin: bottom left;
+  transform: rotate(-2deg) scale(1.35);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: .9rem;
+  letter-spacing: 0;
+  line-height: 1.15;
+  opacity: 0;
+}
+/* Se estampa al terminar de pintar las montañas y se va con la niebla al bajar */
+.seal.is-stamped {
+  opacity: var(--mountains, 1);
+  transform: rotate(-2deg) scale(1);
+  transition: opacity .3s ease-out, transform .45s cubic-bezier(.3, 1.6, .5, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .seal.is-stamped { transition: none; }
 }
 
 .hero-title {
