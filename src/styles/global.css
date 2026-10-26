@@ -2,7 +2,7 @@
 :root {
   --paper: #F4F1EA;
   --ink: #1E1E1E;
-  --gray: #6E6259;
+  --gray: #5F544C; /* AA también sobre la sombra más oscura del fondo */
   --line: #D6CDBF;
   --accent: #A8402F;
   --hanko: #7A4A30;

@@ -1,0 +1,206 @@
+<canvas id="komorebi" class="sumi" aria-hidden="true"></canvas>
+
+<script>
+  // Komorebi: sombras de hojas mecidas por el viento sobre el papel; el puntero actúa de brisa
+  const VERT = `
+    attribute vec2 a_pos;
+    void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+  `;
+
+  const FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    uniform vec2 u_res;
+    uniform float u_aspect;
+    uniform float u_time;
+    uniform vec2 u_mouse;
+    uniform float u_stir;
+    uniform float u_alpha;
+    uniform vec3 u_shadow;
+    uniform vec3 u_light;
+
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float noise(vec2 p) {
+      vec2 i = floor(p), f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                 mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+    }
+
+    // Hoja lanceolada con borde difuso (sombra proyectada)
+    float leaf(vec2 p, vec2 c, float ang, float size, float blur) {
+      vec2 q = p - c;
+      float cs = cos(ang), sn = sin(ang);
+      q = vec2(cs * q.x + sn * q.y, -sn * q.x + cs * q.y) / size;
+      float b = blur / size;
+      float f = abs(q.y) - 0.38 * (1.0 - q.x * q.x);
+      return smoothstep(b, -b, f) * smoothstep(1.0 + b, 1.0 - b, abs(q.x));
+    }
+
+    // Una capa de follaje: hojas repartidas en celdas, cada una con su vaivén
+    float canopy(vec2 p, float scale, float blur, float t, float seed) {
+      vec2 sp = p * scale;
+      vec2 id = floor(sp);
+      float m = 0.0;
+      for (int j = -1; j <= 1; j++) {
+        for (int i = -1; i <= 1; i++) {
+          vec2 cid = id + vec2(float(i), float(j));
+          for (int k = 0; k < 2; k++) {
+            float fk = float(k);
+            vec2 h = vec2(hash(cid + seed + fk * 7.1), hash(cid * 1.7 + seed + fk * 3.3));
+            float ph = hash(cid + fk + seed * 2.0) * 6.2832;
+            vec2 c = cid + h;
+            float near = exp(-dot(c / scale - u_mouse, c / scale - u_mouse) / 0.05);
+            float sway = (sin(t * 0.7 + ph) * 0.07 + sin(t * 1.9 + ph * 1.3) * 0.025) * (1.0 + 3.0 * near * u_stir);
+            c += vec2(sway, sway * 0.4);
+            m = max(m, leaf(sp, c, h.x * 6.2832 + sway * 2.5, 0.38 + 0.26 * h.y, blur));
+          }
+        }
+      }
+      return m;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / u_res;
+      // En vertical, hojas más pequeñas para que quepan más
+      vec2 p = uv * vec2(u_aspect, 1.0) * (u_aspect < 0.8 ? 1.6 : 1.0);
+      float t = u_time;
+
+      // Copas agrupadas, más densas arriba a la derecha y abiertas hacia el texto
+      float lo = u_aspect < 0.8 ? 0.12 : 0.3;
+      float clump = smoothstep(lo, lo + 0.45, noise(p * 1.5 + vec2(t * 0.01, 0.0)));
+      float diag = smoothstep(0.35, 1.25, uv.x * 0.85 + uv.y * 0.75);
+      float far = canopy(p + vec2(t * 0.002, 0.0), 9.0, 0.32, t * 0.8, 1.0);
+      float near = canopy(p, 5.0, 0.07, t, 5.0);
+      float shade = max(far * 0.65, near) * clump * diag;
+
+      // Luz cálida que entra por la esquina
+      float glow = 0.18 * smoothstep(1.5, 0.1, length((uv - vec2(1.05, 1.08)) * vec2(u_aspect, 1.0)));
+      float s = shade * u_alpha;
+      vec3 col = u_shadow * s + u_light * glow * (1.0 - s);
+      gl_FragColor = vec4(col, s + glow * (1.0 - s));
+    }
+  `;
+
+  const FRAME_MS = 1000 / 30;
+
+  const canvas = document.getElementById('komorebi') as HTMLCanvasElement | null;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const gl = canvas?.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
+
+  if (canvas && gl) init(canvas, gl);
+  else if (canvas) canvas.hidden = true;
+
+  function init(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
+    function compile(type: number, src: string) {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || 'shader');
+      return s;
+    }
+
+    const prog = gl.createProgram()!;
+    try {
+      gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+      gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+    } catch {
+      canvas.hidden = true;
+      return;
+    }
+    gl.bindAttribLocation(prog, 0, 'a_pos');
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+    const u = (name: string) => gl.getUniformLocation(prog, name);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    // Sombra marrón oscura y luz cálida
+    gl.uniform3f(u('u_shadow'), 0.24, 0.18, 0.14);
+    gl.uniform3f(u('u_light'), 1.0, 0.95, 0.85);
+
+    let w = 0, h = 0;
+    const mouse = { x: 2, y: 2, stir: 0, lx: -1, ly: -1 };
+    let raf = 0, last = 0, t = 8;
+
+    // A media resolución: las sombras son difusas y el coste es bajo
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      const scale = w < 768 ? 0.4 : 0.5;
+      canvas.width = Math.max(2, Math.round(w * scale));
+      canvas.height = Math.max(2, Math.round(h * scale));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(u('u_res'), canvas.width, canvas.height);
+      gl.uniform1f(u('u_aspect'), w / h);
+      gl.uniform1f(u('u_alpha'), w < 768 ? 0.15 : 0.17);
+    }
+
+    function draw() {
+      gl.uniform1f(u('u_time'), t);
+      const k = w / h < 0.8 ? 1.6 : 1;
+      gl.uniform2f(u('u_mouse'), (mouse.x / h) * k, (1 - mouse.y / h) * k);
+      gl.uniform1f(u('u_stir'), mouse.stir);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    function frame(now: number) {
+      raf = requestAnimationFrame(frame);
+      const dt = now - last;
+      if (dt < FRAME_MS) return;
+      last = now;
+      const s = Math.min(dt, 100) / 1000;
+      t += s;
+      mouse.stir *= Math.exp(-s * 1.2);
+      draw();
+    }
+
+    function start() {
+      if (raf || document.hidden || reduced.matches) return;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function stop() {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+
+    // La brisa crece con la velocidad del puntero
+    function stir(x: number, y: number) {
+      if (mouse.lx >= 0) {
+        const speed = Math.hypot(x - mouse.lx, y - mouse.ly) / h;
+        mouse.stir = Math.min(1, mouse.stir + speed * 4);
+      }
+      mouse.lx = mouse.x = x;
+      mouse.ly = mouse.y = y;
+    }
+
+    window.addEventListener('pointermove', (e) => { if (e.pointerType !== 'touch') stir(e.clientX, e.clientY); }, { passive: true });
+    window.addEventListener('touchmove', (e) => stir(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+    window.addEventListener('touchend', () => { mouse.lx = mouse.ly = -1; }, { passive: true });
+
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => { resize(); draw(); }, 150);
+    }, { passive: true });
+
+    // Con movimiento reducido queda una imagen fija
+    reduced.addEventListener('change', () => (reduced.matches ? stop() : start()));
+
+    canvas.addEventListener('webglcontextlost', () => { stop(); canvas.hidden = true; });
+
+    resize();
+    draw();
+    start();
+  }
+</script>
