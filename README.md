@@ -11,7 +11,7 @@ Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build)
 
 - **Bilingüe** — `/` (ES) y `/en/` (EN) generadas en estático con sus metaetiquetas y Open Graph; el botón "ES / EN" cambia sin recarga y recuerda la elección
 - **Astro** — sitio estático, CSS puro, sin dependencias de UI
-- **Komorebi** — sombras de hojas en WebGL sin librerías que se mecen con el viento y con el cursor (o el dedo); hilo de scroll y entradas suaves; respeta `prefers-reduced-motion`
+- **Montañas a tinta** — capas de montañas a la aguada en WebGL sin librerías, con niebla y paralaje al hacer scroll; hilo de scroll y entradas suaves; respeta `prefers-reduced-motion`
 - **CI/CD** — deploy automático a GitHub Pages en cada push a `main`
 - **Mobile-first** — accesible por teclado y con contraste AA
 
@@ -24,7 +24,7 @@ Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build)
 │   ├── CNAME                # Dominio personalizado
 │   └── favicon.svg
 ├── src/
-│   ├── components/          # Site, Komorebi (fondo), ScrollThread y EcosystemDiagram
+│   ├── components/          # Site, Sansui (fondo), ScrollThread y EcosystemDiagram
 │   ├── i18n/                # Textos ES/EN y datos del sitio
 │   ├── layouts/             # Layout base (meta SEO, Open Graph, fuentes)
 │   ├── pages/               # / y /en/

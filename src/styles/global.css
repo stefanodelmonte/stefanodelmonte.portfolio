@@ -231,6 +231,9 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
 .hero {
   display: grid;
   gap: 3rem;
+  align-content: start;
+  /* Pantalla completa: las montañas quedan dentro del hero y no bajo el texto */
+  min-height: calc(100svh - var(--header-h));
   padding-top: clamp(4rem, 14vh, 9rem);
   padding-bottom: clamp(4rem, 10vh, 7rem);
 }

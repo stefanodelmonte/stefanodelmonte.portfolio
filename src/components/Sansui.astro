@@ -1,0 +1,194 @@
+<canvas id="sansui" class="sumi" aria-hidden="true"></canvas>
+
+<script>
+  // Sansui: capas de montañas a la aguada con niebla. Paralaje con el scroll y se desvanece al dejar el hero
+  const VERT = `
+    attribute vec2 a_pos;
+    void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+  `;
+
+  const FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    uniform vec2 u_res;
+    uniform float u_aspect;
+    uniform float u_time;
+    uniform float u_scroll;
+    uniform float u_fade;
+    uniform float u_mx;
+    uniform float u_scale;
+    uniform vec3 u_ink;
+
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float noise(vec2 p) {
+      vec2 i = floor(p), f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                 mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+    }
+    // Perfil de cresta con picos: ruido «ridged» en varias octavas
+    float peaks(float x, float seed) {
+      float v = 0.0, a = 0.55, f = 1.0;
+      for (int i = 0; i < 5; i++) {
+        float n = 1.0 - abs(noise(vec2(x * f + seed, seed * 1.7)) * 2.0 - 1.0);
+        v += a * n * n;
+        f *= 2.1;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / u_res;
+      float x = uv.x * u_aspect;
+      vec4 acc = vec4(0.0);
+
+      // De la capa más lejana a la más cercana
+      for (int i = 0; i < 4; i++) {
+        float fi = float(i);
+        float depth = (fi + 1.0) / 4.0;
+        float xs = x * (2.2 - fi * 0.4) + u_mx * 0.05 * depth + fi * 3.1;
+        // Picos altos a la derecha; a la izquierda, bajo el texto, colinas suaves
+        float amp = (0.36 - fi * 0.06) * mix(0.3, 1.15, smoothstep(0.1, 0.9, uv.x));
+        float ridge = ((0.4 - fi * 0.095) + (peaks(xs, fi * 13.7) - 0.35) * amp) * u_scale;
+        ridge -= (1.0 - smoothstep(0.0, 0.6, uv.x)) * 0.07 * u_scale;
+        ridge += u_scroll * (0.05 + 0.15 * depth);
+
+        float below = ridge - uv.y;
+        if (below > 0.0) {
+          // Oscura en la cresta y se funde en niebla hacia abajo, con textura de pincel seco
+          float d = exp(-below * (5.0 + fi * 2.5));
+          d *= 0.78 + 0.22 * noise(vec2(x * 30.0, uv.y * 30.0 + fi * 5.0));
+          d *= smoothstep(0.0, 0.003, below);
+          // Bancos de niebla que se desplazan despacio
+          float mist = smoothstep(0.45, 0.85, noise(vec2(x * 1.2 - u_time * (0.015 + fi * 0.006), uv.y * 5.0 + fi * 9.0)));
+          float a = d * (0.12 + fi * 0.08) * (1.0 - mist * 0.7);
+          acc = vec4(u_ink * a, a) + acc * (1.0 - a);
+        }
+      }
+      gl_FragColor = acc * u_fade;
+    }
+  `;
+
+  const FRAME_MS = 1000 / 30;
+
+  const canvas = document.getElementById('sansui') as HTMLCanvasElement | null;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const gl = canvas?.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
+
+  if (canvas && gl) init(canvas, gl);
+  else if (canvas) canvas.hidden = true;
+
+  function init(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
+    function compile(type: number, src: string) {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || 'shader');
+      return s;
+    }
+
+    const prog = gl.createProgram()!;
+    try {
+      gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+      gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+    } catch {
+      canvas.hidden = true;
+      return;
+    }
+    gl.bindAttribLocation(prog, 0, 'a_pos');
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+    const u = (name: string) => gl.getUniformLocation(prog, name);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    // Tinta cálida, entre el negro y el marrón del sello
+    gl.uniform3f(u('u_ink'), 0.2, 0.17, 0.15);
+
+    let w = 0, h = 0, raf = 0, last = 0, t = 0;
+    const mouse = { x: 0, target: 0 };
+
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      const scale = w < 768 ? 0.6 : 0.75;
+      canvas.width = Math.max(2, Math.round(w * scale));
+      canvas.height = Math.max(2, Math.round(h * scale));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(u('u_res'), canvas.width, canvas.height);
+      gl.uniform1f(u('u_aspect'), w / h);
+      // En móvil el texto baja más: montañas algo más bajas
+      gl.uniform1f(u('u_scale'), w < 768 ? 0.72 : 1);
+    }
+
+    // Progreso del scroll en alturas de pantalla
+    const progress = () => window.scrollY / h;
+    const fadeOf = (s: number) => 1 - Math.min(Math.max(s / 0.55, 0), 1);
+
+    function draw() {
+      const s = progress();
+      gl.uniform1f(u('u_time'), t);
+      gl.uniform1f(u('u_scroll'), reduced.matches ? 0 : s);
+      gl.uniform1f(u('u_fade'), fadeOf(s));
+      gl.uniform1f(u('u_mx'), mouse.x);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    function frame(now: number) {
+      raf = requestAnimationFrame(frame);
+      const dt = now - last;
+      if (dt < FRAME_MS) return;
+      last = now;
+      t += Math.min(dt, 100) / 1000;
+      mouse.x += (mouse.target - mouse.x) * 0.06;
+      draw();
+      // Fuera del hero no hay nada que pintar
+      if (fadeOf(progress()) === 0) stop();
+    }
+
+    function start() {
+      if (raf || document.hidden || reduced.matches) return;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function stop() {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (reduced.matches) draw();
+      else if (fadeOf(progress()) > 0) start();
+      else draw();
+    }, { passive: true });
+
+    if (matchMedia('(pointer: fine)').matches) {
+      window.addEventListener('pointermove', (e) => { mouse.target = e.clientX / w - 0.5; }, { passive: true });
+    }
+
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => { resize(); draw(); }, 150);
+    }, { passive: true });
+
+    // Con movimiento reducido: imagen fija que solo se desvanece al bajar
+    reduced.addEventListener('change', () => { if (reduced.matches) stop(); else start(); draw(); });
+
+    canvas.addEventListener('webglcontextlost', () => { stop(); canvas.hidden = true; });
+
+    resize();
+    draw();
+    start();
+  }
+</script>
