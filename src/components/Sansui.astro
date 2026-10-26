@@ -1,7 +1,7 @@
 <canvas id="sansui" class="sumi" aria-hidden="true"></canvas>
 
 <script>
-  // Sansui: montañas a pincel en una esquina, con bandas de niebla. Paralaje con el scroll y se desvanece al dejar el hero
+  // Sansui: montañas a pincel en una esquina que se pintan al cargar, con niebla. Al bajar, la niebla las cubre
   const VERT = `
     attribute vec2 a_pos;
     void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
@@ -19,6 +19,7 @@
     uniform float u_scroll;
     uniform float u_fade;
     uniform float u_veil;
+    uniform float u_paint;
     uniform float u_mx;
     uniform float u_scale;
     uniform vec3 u_ink;
@@ -42,6 +43,26 @@
       return v;
     }
 
+    // Posición dentro de la esquina de las montañas (0 a 1); en ultrapanorámicos mide como mucho 1,6 veces el alto
+    float cornerX(float x) {
+      float reach = min(u_aspect, 1.6);
+      return clamp((x - (u_aspect - reach)) / reach, 0.0, 1.0);
+    }
+    float cornerMask(float cx) {
+      // En vertical la pendiente es más suave para no formar paredes
+      return smoothstep(u_aspect < 0.8 ? -0.3 : 0.3, 0.95, cx);
+    }
+
+    // Altura de la cresta de una capa; se hunde hacia la izquierda conservando el perfil
+    float ridgeAt(float x, float fi) {
+      float depth = (fi + 1.0) / 3.0;
+      float xs = x * (2.4 - fi * 0.5) + u_mx * 0.05 * depth + fi * 3.1;
+      float top = (0.46 - fi * 0.12) + (peaks(xs, fi * 13.7) - 0.35) * (0.34 - fi * 0.08);
+      top += (noise(vec2(x * 12.0, fi)) - 0.5) * 0.004; // detalle fino de la cresta
+      float sink = u_aspect < 0.8 ? 0.28 : 0.55;
+      return (top - (1.0 - cornerMask(cornerX(x))) * sink) * u_scale + u_scroll * (0.05 + 0.15 * depth);
+    }
+
     void main() {
       vec2 uv = gl_FragCoord.xy / u_res;
       float x = uv.x * u_aspect;
@@ -49,39 +70,58 @@
       vec4 acc = vec4(0.0);
 
       // Composición a una esquina: las cordilleras nacen abajo a la derecha y dejan vacío el resto
-      // En vertical la pendiente es más suave para no formar paredes
-      bool narrow = u_aspect < 0.8;
-      // En ultrapanorámicos la esquina mide como mucho 1,6 veces el alto
-      float reach = min(u_aspect, 1.6);
-      float cx = clamp((x - (u_aspect - reach)) / reach, 0.0, 1.0);
-      float corner = smoothstep(narrow ? -0.3 : 0.3, 0.95, cx);
-      float sink = narrow ? 0.28 : 0.55;
+      float cx = cornerX(x);
+      float edgeFade = smoothstep(0.0, 0.4, cornerMask(cx));
 
       // De la capa más lejana a la más cercana
       for (int i = 0; i < 3; i++) {
         float fi = float(i);
-        float depth = (fi + 1.0) / 3.0;
-        float xs = x * (2.4 - fi * 0.5) + u_mx * 0.05 * depth + fi * 3.1;
-        float top = (0.46 - fi * 0.12) + (peaks(xs, fi * 13.7) - 0.35) * (0.34 - fi * 0.08);
-        top += (noise(vec2(x * 12.0, fi)) - 0.5) * 0.004; // detalle fino de la cresta
-        // Se hunde hacia la izquierda conservando el perfil
-        float ridge = (top - (1.0 - corner) * sink) * u_scale + u_scroll * (0.05 + 0.15 * depth);
+        float ridge = ridgeAt(x, fi);
+
+        // Pintado al cargar: el pincel recorre cada cresta de izquierda a derecha y la aguada baja detrás
+        float lp = clamp((u_paint - fi * 0.18) / 0.45, 0.0, 1.0);
+        float head = mix(0.2, 1.08, lp);
+        float drawn = 1.0 - smoothstep(head - 0.02, head, cx);
+        float wp = clamp((u_paint - fi * 0.18 - 0.15) / 0.45, 0.0, 1.0);
 
         float below = ridge - uv.y;
         if (below > 0.0) {
-          // Contorno a pincel: grosor variable según la presión y cortes de pincel seco
-          float w = (0.004 + 0.016 * noise(vec2(x * 2.5, fi * 5.0))) * (0.7 + fi * 0.35);
+          // Carga del pincel: cada trazo empieza cargado y se va secando
+          float load = 1.0 - fract(cx * 1.7 + fi * 0.37) * 0.75;
+          float w = (0.004 + 0.016 * noise(vec2(x * 2.5, fi * 5.0))) * (0.7 + fi * 0.35) * (0.55 + 0.6 * load);
           float stroke = 1.0 - smoothstep(w * 0.4, w, below);
-          // Pincel seco: vetas a lo largo del trazo que se abren donde hay menos tinta
+          // Pincel seco: las vetas se abren donde queda menos tinta
           float streak = noise(vec2(x * 40.0 + fi * 11.0, below / w * 3.0));
-          float load = noise(vec2(x * 1.8 + fi * 4.0, 2.0));
-          float kasure = smoothstep(0.55 - load * 0.45, 0.75 - load * 0.35, streak);
+          float dry = 1.0 - load;
+          float kasure = smoothstep(0.1 + dry * 0.55, 0.3 + dry * 0.5, streak);
           float breaks = smoothstep(0.15, 0.35, noise(vec2(x * 2.2, fi * 7.3)));
-          stroke *= kasure * breaks;
+          stroke *= kasure * breaks * (0.55 + 0.45 * load) * drawn;
+
           // Aguada clara que se funde en el papel
           float wash = exp(-below * (4.0 + fi * 3.0)) * (0.78 + 0.22 * noise(vec2(x * 25.0, uv.y * 25.0)));
-          float a = max(stroke * (0.3 + fi * 0.25), wash * (0.14 + fi * 0.07)) * smoothstep(0.0, 0.4, corner);
+          float lim = wp * 0.7;
+          wash *= (1.0 - smoothstep(lim, lim + 0.08, below)) * smoothstep(0.0, 0.3, wp);
+          wash *= 1.0 - smoothstep(head - 0.12, head - 0.02, cx);
+
+          float a = max(stroke * (0.3 + fi * 0.25), wash * (0.14 + fi * 0.07)) * edgeFade;
           acc = vec4(u_ink * a, a) + acc * (1.0 - a);
+        }
+
+        // Puntos de musgo (ten) sobre las crestas media y cercana, al terminar el trazo
+        if (fi > 0.5) {
+          float cellW = 0.011;
+          float id = floor(x / cellW);
+          // Escasos y agrupados, como toques sueltos del pincel
+          if (hash(vec2(id, fi * 7.0)) > 0.78 && noise(vec2(id * 0.35, fi * 4.0)) > 0.5) {
+            float dx = (id + 0.25 + 0.5 * hash(vec2(id, fi + 3.0))) * cellW;
+            float dy = ridgeAt(dx, fi) + 0.002 + 0.004 * hash(vec2(id, fi + 5.0));
+            float r = 0.0022 + 0.0018 * hash(vec2(id, fi + 9.0));
+            float d = length(vec2((x - dx) / 0.8, uv.y - dy));
+            float dcx = cornerX(dx);
+            float gate = smoothstep(0.45, 0.7, dcx) * smoothstep(0.85, 1.0, lp);
+            float a = (1.0 - smoothstep(r * 0.6, r, d)) * 0.6 * gate;
+            acc = vec4(u_ink * a, a) + acc * (1.0 - a);
+          }
         }
       }
 
@@ -108,6 +148,7 @@
   `;
 
   const FRAME_MS = 1000 / 30;
+  const PAINT_MS = 2800;
 
   const canvas = document.getElementById('sansui') as HTMLCanvasElement | null;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -147,6 +188,10 @@
     gl.uniform3f(u('u_ink'), 0.1, 0.105, 0.115);
 
     let w = 0, h = 0, raf = 0, last = 0, t = 0;
+    const paintStart = performance.now();
+    const seal = document.querySelector<HTMLElement>('.seal');
+    // Progreso del pintado inicial; con movimiento reducido aparece ya terminado
+    const paintOf = () => (reduced.matches ? 1 : Math.min((performance.now() - paintStart) / PAINT_MS, 1));
     const mouse = { x: 0, target: 0 };
 
     function resize() {
@@ -175,6 +220,10 @@
       gl.uniform1f(u('u_scroll'), reduced.matches ? 0 : s);
       gl.uniform1f(u('u_fade'), fadeOf(s));
       gl.uniform1f(u('u_veil'), veilOf(s));
+      const paint = paintOf();
+      gl.uniform1f(u('u_paint'), paint);
+      // El sello se estampa al terminar de pintar
+      if (paint >= 1) seal?.classList.add('is-stamped');
       document.documentElement.style.setProperty('--mountains', String(1 - veilOf(s)));
       gl.uniform1f(u('u_mx'), mouse.x);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -189,7 +238,7 @@
       mouse.x += (mouse.target - mouse.x) * 0.06;
       draw();
       // Fuera del hero no hay nada que pintar
-      if (fadeOf(progress()) === 0) stop();
+      if (fadeOf(progress()) === 0 && paintOf() >= 1) stop();
     }
 
     function start() {

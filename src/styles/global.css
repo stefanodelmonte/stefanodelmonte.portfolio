@@ -115,13 +115,22 @@ button { font: inherit; color: inherit; }
   color: var(--paper);
   border-radius: 2px;
   box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(244, 241, 234, .4);
-  transform: rotate(-2deg);
+  transform: rotate(-2deg) scale(1.35);
   font-family: var(--font-serif);
   font-weight: 500;
   font-size: .9rem;
   line-height: 1.15;
-  opacity: var(--mountains, 0); /* solo visible si el fondo se ha pintado */
+  opacity: 0;
   pointer-events: none;
+}
+/* Se estampa al terminar de pintar las montañas; solo si el fondo existe */
+.seal.is-stamped {
+  opacity: var(--mountains, 0);
+  transform: rotate(-2deg) scale(1);
+  transition: opacity .3s ease-out, transform .45s cubic-bezier(.3, 1.6, .5, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .seal.is-stamped { transition: none; }
 }
 @media (max-aspect-ratio: 4/5) {
   .seal { bottom: 38svh; }
