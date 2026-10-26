@@ -2,10 +2,9 @@
 :root {
   --paper: #F4F1EA;
   --ink: #1E1E1E;
-  --gray: #554A43; /* AA también sobre la sombra más oscura del fondo */
+  --gray: #616161;
   --line: #D6CDBF;
-  --accent: #A8402F;
-  --hanko: #7A4A30;
+  --accent: #A8402F; /* bermellón: logo y sello, menos del 5 % */
 
   --phone: #E9E3D8;
   --phone-screen: #E0D9CC;
@@ -102,6 +101,32 @@ button { font: inherit; color: inherit; }
   pointer-events: none;
 }
 
+/* Sello rojo de la pintura, como la firma de un pintor; se va con la niebla */
+.seal {
+  position: fixed;
+  right: max(var(--gutter), 6vw);
+  bottom: 60vh;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  padding: .35rem 0;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(244, 241, 234, .4);
+  transform: rotate(-2deg);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: .9rem;
+  line-height: 1.15;
+  opacity: var(--mountains, 0); /* solo visible si el fondo se ha pintado */
+  pointer-events: none;
+}
+@media (max-aspect-ratio: 4/5) {
+  .seal { bottom: 38svh; }
+}
+
 .skip-link, .site-header, main, .site-footer { position: relative; z-index: 2; }
 
 /* ---- Layout ---- */
@@ -151,16 +176,16 @@ button { font: inherit; color: inherit; }
   min-width: 44px;
   min-height: 44px;
   margin-left: -.25rem;
-  color: var(--hanko);
+  color: var(--accent);
   text-decoration: none;
   font-family: var(--font-serif);
   font-weight: 500;
   font-size: 1.45rem;
   letter-spacing: .06em;
   line-height: 1;
-  transition: color .3s var(--ease);
+  transition: opacity .3s var(--ease);
 }
-.hanko:hover { color: var(--accent); }
+.hanko:hover { opacity: .8; }
 
 .header-tools {
   display: flex;
@@ -179,7 +204,15 @@ button { font: inherit; color: inherit; }
   transition: color .3s var(--ease);
 }
 
-.site-nav a:hover { color: var(--accent); }
+/* Hovers en tinta: el rojo queda solo para el logo y el sello */
+.site-nav a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .45em;
+  text-decoration-color: transparent;
+  transition: text-decoration-color .3s var(--ease);
+}
+.site-nav a:hover { text-decoration-color: var(--ink); }
 
 .lang-toggle {
   display: inline-flex;
@@ -193,7 +226,7 @@ button { font: inherit; color: inherit; }
 html[data-lang="es"] .lang-es,
 html[data-lang="en"] .lang-en { color: var(--ink); }
 .lang-toggle:hover .lang-es,
-.lang-toggle:hover .lang-en { color: var(--accent); }
+.lang-toggle:hover .lang-en { color: var(--ink); }
 html[data-lang="es"] .lang-toggle:hover .lang-es,
 html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
 
@@ -289,9 +322,9 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   letter-spacing: .04em;
   text-decoration: none;
   cursor: pointer;
-  transition: color .3s var(--ease), border-color .3s var(--ease);
+  transition: color .3s var(--ease), background-color .3s var(--ease);
 }
-.btn:hover { color: var(--accent); border-color: var(--accent); }
+.btn:hover { background: var(--ink); color: var(--paper); }
 
 .text-link {
   display: inline-flex;
@@ -305,7 +338,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   text-decoration-color: var(--gray);
   transition: color .3s var(--ease), text-decoration-color .3s var(--ease);
 }
-.text-link:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.text-link:hover { text-decoration-color: var(--ink); text-decoration-thickness: 2px; }
 
 /* ---- Secciones ---- */
 .section {
@@ -431,7 +464,13 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   letter-spacing: .14em;
   color: var(--gray);
 }
-.index summary:hover .index-title { color: var(--accent); }
+.index-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .25em;
+  text-decoration-color: transparent;
+}
+.index summary:hover .index-title { text-decoration-color: var(--ink); }
 
 /* Más / menos con dos líneas de 1px */
 .index-toggle {
@@ -715,9 +754,10 @@ details[open] .index-toggle::after { transform: rotate(0deg); }
   font-size: clamp(1.05rem, 4.4vw, 1.15rem);
   text-decoration: none;
   overflow-wrap: anywhere;
-  transition: color .3s var(--ease);
+  background: linear-gradient(var(--ink), var(--ink)) left bottom / 0 1px no-repeat;
+  transition: background-size .4s var(--ease);
 }
-.contact-value:hover { color: var(--accent); }
+.contact-value:hover { background-size: 100% 1px; }
 
 .contact-actions {
   display: flex;
@@ -749,7 +789,7 @@ details[open] .index-toggle::after { transform: rotate(0deg); }
   stroke-linejoin: round;
 }
 .icon-btn:hover,
-.icon-btn.is-copied { color: var(--accent); }
+.icon-btn.is-copied { color: var(--ink); }
 .icon-btn .icon-check,
 .icon-btn.is-copied .icon-copy { display: none; }
 .icon-btn.is-copied .icon-check { display: block; }

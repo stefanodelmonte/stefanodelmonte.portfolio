@@ -18,6 +18,7 @@
     uniform float u_time;
     uniform float u_scroll;
     uniform float u_fade;
+    uniform float u_veil;
     uniform float u_mx;
     uniform float u_scale;
     uniform vec3 u_ink;
@@ -89,12 +90,18 @@
         float fb = float(b);
         float cy = (0.2 + fb * 0.13) * u_scale + u_scroll * 0.12;
         cy += (noise(vec2(x * 1.5 - t * 0.02, fb * 5.0)) - 0.5) * 0.02; // borde ondulado
-        float edge = 0.018 + 0.008 * noise(vec2(x * 3.0 + fb * 9.0, t * 0.04));
+        float edge = (0.018 + 0.008 * noise(vec2(x * 3.0 + fb * 9.0, t * 0.04))) * (1.0 + u_veil * 5.0);
         float band = 1.0 - smoothstep(edge * 0.45, edge, abs(uv.y - cy));
         // Extremos irregulares que se desplazan muy despacio
         float span = smoothstep(0.15, 0.4, noise(vec2(x * 0.9 - t * (0.012 + fb * 0.006), fb * 3.0 + 1.0)));
+        span = mix(span, 1.0, u_veil);
         acc *= 1.0 - band * span * 0.85;
       }
+
+      // Al bajar, la niebla sube desde abajo y se traga las montañas
+      float wav = (noise(vec2(x * 1.2 + t * 0.03, 3.0)) - 0.5) * 0.12;
+      float m = u_veil * 1.4 - 0.1;
+      acc *= smoothstep(m - 0.25, m, uv.y + wav);
 
       gl_FragColor = acc * u_fade;
     }
@@ -158,13 +165,17 @@
 
     // Progreso del scroll en alturas de pantalla
     const progress = () => window.scrollY / h;
-    const fadeOf = (s: number) => 1 - Math.min(Math.max(s / 0.55, 0), 1);
+    // La niebla cubre las montañas entre 0 y 0,6 pantallas de scroll
+    const veilOf = (s: number) => Math.min(Math.max(s / 0.6, 0), 1);
+    const fadeOf = (s: number) => 1 - Math.min(Math.max((s - 0.5) / 0.2, 0), 1);
 
     function draw() {
       const s = progress();
       gl.uniform1f(u('u_time'), t);
       gl.uniform1f(u('u_scroll'), reduced.matches ? 0 : s);
       gl.uniform1f(u('u_fade'), fadeOf(s));
+      gl.uniform1f(u('u_veil'), veilOf(s));
+      document.documentElement.style.setProperty('--mountains', String(1 - veilOf(s)));
       gl.uniform1f(u('u_mx'), mouse.x);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
