@@ -11,7 +11,7 @@ Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build)
 
 - **Bilingüe** — `/` (ES) y `/en/` (EN) generadas en estático con sus metaetiquetas y Open Graph; el botón "ES / EN" cambia sin recarga y recuerda la elección
 - **Astro** — sitio estático, CSS puro, sin dependencias de UI
-- **Animación sutil** — hilo de 1px ligado al scroll y entradas suaves; respeta `prefers-reduced-motion`
+- **Tinta sumi** — el cursor (o el toque) deja tinta que se difunde y se seca en ~4 s, con WebGL sin librerías; hilo de scroll y entradas suaves; respeta `prefers-reduced-motion`
 - **CI/CD** — deploy automático a GitHub Pages en cada push a `main`
 - **Mobile-first** — accesible por teclado y con contraste AA
 
@@ -24,7 +24,7 @@ Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build)
 │   ├── CNAME                # Dominio personalizado
 │   └── favicon.svg
 ├── src/
-│   ├── components/          # Site (contenido) y ScrollThread (hilo de scroll)
+│   ├── components/          # Site, SumiInk (tinta), ScrollThread y EcosystemDiagram
 │   ├── i18n/                # Textos ES/EN y datos del sitio
 │   ├── layouts/             # Layout base (meta SEO, Open Graph, fuentes)
 │   ├── pages/               # / y /en/

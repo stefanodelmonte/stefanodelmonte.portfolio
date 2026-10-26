@@ -20,7 +20,7 @@ export const en: Record<keyof typeof es, string> = {
   'hero.title': 'Software developer',
   'hero.location': 'Tarragona',
   'hero.intro': 'Second-year Multiplatform App Development student at La Salle Tarragona. Looking for an internship.',
-  'hero.cv': 'Download CV (Spanish)',
+  'hero.cv': 'Download CV',
 
   'about.p1': "I'm training in Multiplatform Application Development, focusing on backend with Java and Spring Boot and on Android development with Kotlin.",
   'about.p2': 'Before programming I worked in retail, customer service and tourism. That varied background gave me responsibility, adaptability and the habit of working in a team under pressure.',
@@ -51,6 +51,10 @@ export const en: Record<keyof typeof es, string> = {
   'android.solution': 'Native Kotlin app that consumes the same REST API as the backend, keeping business logic centralised on the server.',
   'android.placeholder': 'Screenshots coming soon',
   'android.mediaAlt': 'Screenshot of the library Android app',
+
+  'diagram.app': 'Android app',
+  'diagram.db': 'Database',
+  'diagram.caption': 'Architecture: the Android app consumes the REST API, which stores data in PostgreSQL.',
 
   'skills.backend': 'Backend',
   'skills.frontend': 'Frontend',

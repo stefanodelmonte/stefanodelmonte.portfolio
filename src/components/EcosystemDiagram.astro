@@ -1,0 +1,30 @@
+---
+import { t as translate, type Lang, type Key } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  active: 'app' | 'api';
+}
+
+const { lang, active } = Astro.props;
+const t = (key: Key) => translate(lang, key);
+---
+
+<!-- App Android -> API REST -> PostgreSQL; resalta la pieza del proyecto -->
+<figure class="eco">
+  <div class:list={['eco-node', { 'is-active': active === 'app' }]}>
+    <span class="eco-name" data-i18n="diagram.app">{t('diagram.app')}</span>
+    <span class="eco-tech">Kotlin</span>
+  </div>
+  <div class="eco-edge" aria-hidden="true"><span>HTTP · JSON</span></div>
+  <div class:list={['eco-node', { 'is-active': active === 'api' }]}>
+    <span class="eco-name">API REST</span>
+    <span class="eco-tech">Spring Boot</span>
+  </div>
+  <div class="eco-edge" aria-hidden="true"><span>SQL</span></div>
+  <div class="eco-node">
+    <span class="eco-name">PostgreSQL</span>
+    <span class="eco-tech" data-i18n="diagram.db">{t('diagram.db')}</span>
+  </div>
+  <figcaption class="sr-only" data-i18n="diagram.caption">{t('diagram.caption')}</figcaption>
+</figure>

@@ -50,6 +50,10 @@ export const es = {
   'android.placeholder': 'Capturas próximamente',
   'android.mediaAlt': 'Captura de la app Android de la biblioteca',
 
+  'diagram.app': 'App Android',
+  'diagram.db': 'Base de datos',
+  'diagram.caption': 'Arquitectura: la app Android consume la API REST, que guarda los datos en PostgreSQL.',
+
   'skills.backend': 'Backend',
   'skills.frontend': 'Frontend',
   'skills.tools': 'Herramientas',
