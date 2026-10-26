@@ -178,7 +178,7 @@ button { font: inherit; color: inherit; }
   transition: color .3s var(--ease);
 }
 
-/* Hovers en tinta: el rojo queda solo para el logo y el sello */
+/* Hovers: subrayado en bermellón; el texto se queda en tinta */
 .site-nav a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -186,7 +186,7 @@ button { font: inherit; color: inherit; }
   text-decoration-color: transparent;
   transition: text-decoration-color .3s var(--ease);
 }
-.site-nav a:hover { text-decoration-color: var(--ink); }
+.site-nav a:hover { text-decoration-color: var(--accent); }
 
 .lang-toggle {
   display: inline-flex;
@@ -354,7 +354,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   text-decoration-color: var(--gray);
   transition: color .3s var(--ease), text-decoration-color .3s var(--ease);
 }
-.text-link:hover { text-decoration-color: var(--ink); text-decoration-thickness: 2px; }
+.text-link:hover { text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
 
 /* ---- Secciones ---- */
 .section {
@@ -486,7 +486,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   text-underline-offset: .25em;
   text-decoration-color: transparent;
 }
-.index summary:hover .index-title { text-decoration-color: var(--ink); }
+.index summary:hover .index-title { text-decoration-color: var(--accent); }
 
 /* Más / menos con dos líneas de 1px */
 .index-toggle {
@@ -770,7 +770,7 @@ details[open] .index-toggle::after { transform: rotate(0deg); }
   font-size: clamp(1.05rem, 4.4vw, 1.15rem);
   text-decoration: none;
   overflow-wrap: anywhere;
-  background: linear-gradient(var(--ink), var(--ink)) left bottom / 0 1px no-repeat;
+  background: linear-gradient(var(--accent), var(--accent)) left bottom / 0 1px no-repeat;
   transition: background-size .4s var(--ease);
 }
 .contact-value:hover { background-size: 100% 1px; }
