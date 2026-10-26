@@ -25,6 +25,8 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
+  /* Escala fluida: 16 px en móvil y portátil, hasta 22 px en monitores grandes; todo en rem crece con ella */
+  font-size: clamp(100%, 0.78rem + 0.32vw, 137.5%);
   -webkit-text-size-adjust: 100%;
   scroll-padding-top: calc(var(--header-h) + 1.5rem);
 }
@@ -112,6 +114,8 @@ button { font: inherit; color: inherit; }
 
 @media (min-width: 768px) { :root { --gutter: 2.5rem; } }
 @media (min-width: 1200px) { :root { --gutter: 4rem; } }
+/* Ultrapanorámicos: el contenido aprovecha más ancho sin perder márgenes amplios */
+@media (min-width: 2200px) { .wrap { max-width: 92rem; } }
 
 .skip-link {
   position: absolute;

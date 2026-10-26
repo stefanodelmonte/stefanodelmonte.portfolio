@@ -50,7 +50,10 @@
       // Composición a una esquina: las cordilleras nacen abajo a la derecha y dejan vacío el resto
       // En vertical la pendiente es más suave para no formar paredes
       bool narrow = u_aspect < 0.8;
-      float corner = smoothstep(narrow ? -0.3 : 0.3, 0.95, uv.x);
+      // En ultrapanorámicos la esquina mide como mucho 1,6 veces el alto
+      float reach = min(u_aspect, 1.6);
+      float cx = clamp((x - (u_aspect - reach)) / reach, 0.0, 1.0);
+      float corner = smoothstep(narrow ? -0.3 : 0.3, 0.95, cx);
       float sink = narrow ? 0.28 : 0.55;
 
       // De la capa más lejana a la más cercana
@@ -142,14 +145,15 @@
     function resize() {
       w = window.innerWidth;
       h = window.innerHeight;
-      const scale = w < 768 ? 0.75 : 1;
+      // Resolución adaptativa: nitidez según la densidad de píxeles, con un tope de ~2,5 Mpx
+      const scale = Math.min(Math.min(window.devicePixelRatio || 1, 1.5), Math.sqrt(2.5e6 / (w * h)));
       canvas.width = Math.max(2, Math.round(w * scale));
       canvas.height = Math.max(2, Math.round(h * scale));
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(u('u_res'), canvas.width, canvas.height);
       gl.uniform1f(u('u_aspect'), w / h);
-      // En móvil el texto baja más: montañas algo más bajas
-      gl.uniform1f(u('u_scale'), w < 768 ? 0.72 : 1);
+      // En pantallas verticales el texto baja más: montañas algo más bajas
+      gl.uniform1f(u('u_scale'), w / h < 0.8 ? 0.72 : 1);
     }
 
     // Progreso del scroll en alturas de pantalla
