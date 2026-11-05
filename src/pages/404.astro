@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site, t } from '../i18n';
+---
+
+<!-- GitHub Pages sirve esta página para cualquier ruta que no exista; se muestra en los dos idiomas -->
+<Layout lang="es" notFound>
+  <main id="main" class="not-found wrap">
+    <a href={site.path.es} class="hanko" aria-label={t('es', 'a11y.home')}><span aria-hidden="true">SD</span></a>
+    <p class="section-num" aria-hidden="true">404</p>
+    <div class="not-found-grid">
+      <section>
+        <h1>{t('es', '404.heading')}</h1>
+        <p>{t('es', '404.text')}</p>
+        <a class="text-link" href={site.path.es}>{t('es', '404.back')}</a>
+      </section>
+      <section lang="en">
+        <h2>{t('en', '404.heading')}</h2>
+        <p>{t('en', '404.text')}</p>
+        <a class="text-link" href={site.path.en} hreflang="en">{t('en', '404.back')}</a>
+      </section>
+    </div>
+  </main>
+</Layout>

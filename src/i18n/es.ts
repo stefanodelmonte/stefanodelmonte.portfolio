@@ -72,4 +72,9 @@ export const es = {
   'contact.send': 'Enviar correo',
   'contact.copy': 'Copiar correo',
   'contact.copied': 'Copiado',
+
+  '404.title': 'Página no encontrada · Stefano Delmonte',
+  '404.heading': 'Página no encontrada',
+  '404.text': 'Esta dirección no existe o ha cambiado de sitio.',
+  '404.back': 'Volver al inicio',
 } as const;

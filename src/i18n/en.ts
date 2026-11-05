@@ -74,4 +74,9 @@ export const en: Record<keyof typeof es, string> = {
   'contact.send': 'Send email',
   'contact.copy': 'Copy email',
   'contact.copied': 'Copied',
+
+  '404.title': 'Page not found · Stefano Delmonte',
+  '404.heading': 'Page not found',
+  '404.text': "This address doesn't exist or has moved.",
+  '404.back': 'Back to home',
 };

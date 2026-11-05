@@ -189,8 +189,14 @@
     const veilOf = (s: number) => Math.min(Math.max(s / 0.6, 0), 1);
     const fadeOf = (s: number) => 1 - Math.min(Math.max((s - 0.5) / 0.2, 0), 1);
 
+    // Ya desvanecido y pintado: el lienzo está vacío y no hace falta repetirlo en cada scroll
+    let idle = false;
+
     function draw() {
       const s = progress();
+      const off = fadeOf(s) === 0 && paintOf() >= 1;
+      if (off && idle) return;
+      idle = off;
       gl.uniform1f(u('u_time'), t);
       gl.uniform1f(u('u_scroll'), reduced.matches ? 0 : s);
       gl.uniform1f(u('u_fade'), fadeOf(s));
@@ -242,13 +248,14 @@
     let resizeTimer = 0;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => { resize(); draw(); }, 150);
+      resizeTimer = window.setTimeout(() => { resize(); idle = false; draw(); }, 150);
     }, { passive: true });
 
     // Con movimiento reducido: imagen fija que solo se desvanece al bajar
     reduced.addEventListener('change', () => { if (reduced.matches) stop(); else start(); draw(); });
 
-    canvas.addEventListener('webglcontextlost', () => { stop(); canvas.hidden = true; });
+    // Sin contexto no habrá pintado que termine: el sello aparece igualmente
+    canvas.addEventListener('webglcontextlost', () => { stop(); canvas.hidden = true; seal?.classList.add('is-stamped'); });
 
     resize();
     draw();

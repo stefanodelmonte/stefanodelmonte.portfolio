@@ -37,11 +37,12 @@ Portfolio personal bilingüe (ES/EN) construido con [Astro](https://astro.build)
 
 ## Desarrollo local
 
-Requisitos: Node.js 18+ y npm.
+Requisitos: Node.js 22.23+ y npm.
 
 ```bash
 npm install          # Instalar dependencias
 npm run dev          # Servidor de desarrollo (localhost:4321)
+npm run check        # Comprobación de tipos
 npm run build        # Build de producción
 npm run preview      # Preview del build
 ```

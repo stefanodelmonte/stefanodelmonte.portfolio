@@ -1,17 +1,37 @@
 ---
+import '@fontsource/shippori-mincho/latin-400.css';
+import '@fontsource/shippori-mincho/latin-500.css';
+import '@fontsource/zen-kaku-gothic-new/latin-300.css';
+import '@fontsource/zen-kaku-gothic-new/latin-400.css';
+import '@fontsource/zen-kaku-gothic-new/latin-500.css';
 import '../styles/global.css';
 import { site, t, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
+  // Página de error: sin canonical, sin alternativas y fuera del índice
+  notFound?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, notFound = false } = Astro.props;
 const other: Lang = lang === 'es' ? 'en' : 'es';
-const title = t(lang, 'meta.title');
+const title = notFound ? t(lang, '404.title') : t(lang, 'meta.title');
 const description = t(lang, 'meta.description');
 const url = site.url + site.path[lang];
 const image = `${site.url}/img/og-${lang}.png`;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Stefano Delmonte',
+  jobTitle: t(lang, 'hero.title'),
+  url: site.url,
+  image: `${site.url}/apple-touch-icon.png`,
+  email: `mailto:${site.email}`,
+  sameAs: [site.linkedin, site.github],
+  alumniOf: { '@type': 'EducationalOrganization', name: 'La Salle Tarragona' },
+  knowsLanguage: ['es', 'ca', 'en', 'it'],
+};
 ---
 
 <!DOCTYPE html>
@@ -23,21 +43,28 @@ const image = `${site.url}/img/og-${lang}.png`;
   <meta name="description" content={description} />
   <meta name="theme-color" content="#F4F1EA" />
   <meta name="color-scheme" content="light" />
-  <link rel="canonical" href={url} />
-  <link rel="alternate" hreflang="es" href={site.url + site.path.es} />
-  <link rel="alternate" hreflang="en" href={site.url + site.path.en} />
-  <link rel="alternate" hreflang="x-default" href={site.url + site.path.es} />
+  {notFound ? (
+    <meta name="robots" content="noindex" />
+  ) : (
+    <>
+      <link rel="canonical" href={url} />
+      <link rel="alternate" hreflang="es" href={site.url + site.path.es} />
+      <link rel="alternate" hreflang="en" href={site.url + site.path.en} />
+      <link rel="alternate" hreflang="x-default" href={site.url + site.path.es} />
+    </>
+  )}
 
-  <!-- Elige idioma antes de pintar: preferencia guardada o idioma del navegador -->
-  <script is:inline define:vars={{ pageLang: lang, paths: site.path }}>
+  <!-- Elige idioma antes de pintar, solo al entrar por la raíz: un enlace a /en/ se respeta siempre -->
+  <script is:inline define:vars={{ paths: site.path }}>
     (function () {
       document.documentElement.classList.add('js');
+      if (location.pathname !== paths.es) return;
       if (/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent)) return;
       var stored = null;
       try { stored = localStorage.getItem('lang'); } catch (e) {}
       var nav = (navigator.language || '').toLowerCase();
       var pref = stored || (/^(es|ca|gl|eu)/.test(nav) ? 'es' : 'en');
-      if (pref !== pageLang && paths[pref]) location.replace(paths[pref] + location.hash);
+      if (pref === 'en') location.replace(paths.en + location.hash);
     })();
   </script>
 
@@ -61,11 +88,10 @@ const image = `${site.url}/img/og-${lang}.png`;
   <meta name="twitter:image" content={image} />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" />
-
+  {!notFound && <script type="application/ld+json" set:html={JSON.stringify(person)} />}
 </head>
 <body>
   <slot />
