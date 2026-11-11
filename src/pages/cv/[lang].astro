@@ -170,12 +170,13 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
     position: absolute;
     top: -14mm;
     right: -17mm;
+    /* Proporción 16:9, como una pantalla: el shader compone el paisaje para ella */
     width: 112mm;
-    height: 54mm;
+    height: 63mm;
     pointer-events: none;
     /* Se funden con el papel por abajo, como la niebla de la web */
-    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
-    mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
+    mask-image: linear-gradient(to bottom, #000 72%, transparent);
   }
   .cv-head h1 {
     position: relative;
