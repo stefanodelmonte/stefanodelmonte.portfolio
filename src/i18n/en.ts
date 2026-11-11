@@ -11,6 +11,7 @@ export const en: Record<keyof typeof es, string> = {
   'a11y.nav': 'Main navigation',
   'a11y.lang': 'Change language: Spanish or English',
   'a11y.theme': 'Dark mode',
+  'a11y.close': 'Close',
 
   'nav.about': 'About',
   'nav.projects': 'Projects',

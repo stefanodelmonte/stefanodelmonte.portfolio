@@ -9,6 +9,7 @@ export const es = {
   'a11y.nav': 'Navegación principal',
   'a11y.lang': 'Cambiar idioma: castellano o inglés',
   'a11y.theme': 'Modo oscuro',
+  'a11y.close': 'Cerrar',
 
   'nav.about': 'Sobre mí',
   'nav.projects': 'Proyectos',

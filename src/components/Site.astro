@@ -116,10 +116,10 @@ const nav = [
     <div class="section-body">
       <h2 id="projects-title" class="section-heading" data-reveal data-i18n="projects.heading">{t('projects.heading')}</h2>
 
-      <!-- Índice con panel: los títulos a la izquierda y el detalle del elegido a la derecha.
-           Sin JS se ven todos seguidos; en móvil el detalle se abre bajo su título -->
-      <div class="works" data-reveal style={`--works:${projects.length}`}>
-        {projects.map((p, i) => {
+      <!-- Lista de títulos; al pulsar uno, su detalle se abre en la ventana de abajo.
+           Sin JS se ven todos los detalles seguidos -->
+      <div class="works" data-reveal>
+        {projects.map((p) => {
           const facts = (
             <dl class="project-facts">
               <div><dt data-i18n="projects.problem">{t('projects.problem')}</dt><dd data-i18n={pk(p.id, 'problem')}>{t(pk(p.id, 'problem'))}</dd></div>
@@ -136,11 +136,11 @@ const nav = [
           );
           return (
             <div class="work">
-              <button type="button" class="work-tab" id={`work-${p.id}`} aria-controls={`work-${p.id}-panel`} aria-expanded={i === 0 ? 'true' : 'false'}>
+              <button type="button" class="work-tab" aria-haspopup="dialog">
                 <span class="work-title" data-i18n={pk(p.id, 'title')}>{t(pk(p.id, 'title'))}</span>
                 <span class="work-status" data-i18n={pk(p.id, 'status')}>{t(pk(p.id, 'status'))}</span>
               </button>
-              <div class="work-panel" id={`work-${p.id}-panel`} role="region" aria-labelledby={`work-${p.id}`}>
+              <div class="work-panel">
                 {p.android ? (
                   <>
                     <EcosystemDiagram lang={lang} active="app" />
@@ -167,6 +167,22 @@ const nav = [
           );
         })}
       </div>
+
+      <!-- Ventana del proyecto: el script mueve aquí el detalle al abrirla y lo devuelve al cerrarla -->
+      <dialog id="workDialog" class="work-dialog" aria-labelledby="workDialogTitle">
+        <div class="work-dialog-inner">
+          <div class="work-dialog-head">
+            <div>
+              <h3 id="workDialogTitle" class="work-dialog-title" tabindex="-1" autofocus></h3>
+              <p class="work-status"></p>
+            </div>
+            <button type="button" class="icon-btn work-dialog-close" aria-label={t('a11y.close')} data-i18n-attr="aria-label:a11y.close">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+            </button>
+          </div>
+          <div class="work-dialog-body"></div>
+        </div>
+      </dialog>
     </div>
   </section>
 
@@ -272,35 +288,49 @@ const nav = [
     items.forEach((el) => io.observe(el));
   }
 
-  // Proyectos: siempre hay uno abierto en escritorio; en móvil se puede cerrar el abierto
-  const tabs = [...document.querySelectorAll<HTMLButtonElement>('.work-tab')];
-  const wide = matchMedia('(min-width: 900px)');
-  const hover = matchMedia('(min-width: 900px) and (pointer: fine)');
+  // Proyectos: el detalle se mueve a la ventana al abrirla y vuelve a su sitio al cerrarla
+  const dialog = document.getElementById('workDialog') as HTMLDialogElement | null;
+  const dialogBody = dialog?.querySelector<HTMLElement>('.work-dialog-body');
+  const dialogTitle = dialog?.querySelector<HTMLElement>('.work-dialog-title');
+  const dialogStatus = dialog?.querySelector<HTMLElement>('.work-status');
 
-  function open(tab: HTMLButtonElement) {
-    tabs.forEach((t) => t.setAttribute('aria-expanded', String(t === tab)));
+  // Cada detalle recuerda su proyecto para volver siempre a su sitio
+  const homes = new Map<HTMLElement, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('.work').forEach((work) => {
+    const panel = work.querySelector<HTMLElement>('.work-panel');
+    if (panel) homes.set(panel, work);
+  });
+  function restore() {
+    dialogBody?.querySelectorAll<HTMLElement>('.work-panel').forEach((p) => homes.get(p)?.append(p));
   }
 
-  tabs.forEach((tab) => {
+  // Copia texto y clave de traducción para que el cambio de idioma también los actualice
+  function mirror(target: HTMLElement, source: HTMLElement | null) {
+    target.textContent = source?.textContent ?? '';
+    if (source?.dataset.i18n) target.dataset.i18n = source.dataset.i18n;
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.work-tab').forEach((tab) => {
     tab.addEventListener('click', () => {
-      const isOpen = tab.getAttribute('aria-expanded') === 'true';
-      if (isOpen && !wide.matches) tab.setAttribute('aria-expanded', 'false');
-      else open(tab);
-      // Al cerrarse uno de arriba el contenido sube: mantiene a la vista el título tocado
-      if (!wide.matches) tab.scrollIntoView({ block: 'nearest' });
+      const panel = tab.closest<HTMLElement>('.work')?.querySelector<HTMLElement>('.work-panel');
+      if (!dialog || !dialogBody || !dialogTitle || !dialogStatus || !panel) return;
+      // El evento de cierre llega después: si queda un detalle anterior, vuelve antes de abrir otro
+      restore();
+      mirror(dialogTitle, tab.querySelector('.work-title'));
+      mirror(dialogStatus, tab.querySelector('.work-status'));
+      dialogBody.append(panel);
+      document.documentElement.classList.add('is-locked');
+      if (!dialog.open) dialog.showModal();
+      dialog.scrollTop = 0;
     });
-
-    // En escritorio basta con pasar el ratón; la pausa evita cambios al cruzar la lista
-    let timer = 0;
-    tab.addEventListener('pointerenter', () => {
-      if (!hover.matches) return;
-      timer = window.setTimeout(() => open(tab), 120);
-    });
-    tab.addEventListener('pointerleave', () => clearTimeout(timer));
   });
 
-  // Al volver a escritorio con todo cerrado, abre el primero
-  wide.addEventListener('change', () => {
-    if (wide.matches && tabs[0] && !tabs.some((t) => t.getAttribute('aria-expanded') === 'true')) open(tabs[0]);
+  dialog?.addEventListener('close', () => {
+    if (dialog.open) return;
+    restore();
+    document.documentElement.classList.remove('is-locked');
   });
+  dialog?.querySelector('.work-dialog-close')?.addEventListener('click', () => dialog.close());
+  // Clic fuera de la ventana (sobre el fondo oscurecido)
+  dialog?.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 </script>

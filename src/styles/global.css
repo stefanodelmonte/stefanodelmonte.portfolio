@@ -12,6 +12,7 @@
   --phone: #E9E3D8;
   --phone-screen: #E0D9CC;
   --phone-text: #554A42;
+  --surface: #F9F7F2; /* ventanas por encima de la página */
 
   --font-serif: 'Shippori Mincho', 'EB Garamond', 'Times New Roman', serif;
   --font-sans: 'Zen Kaku Gothic New', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -37,6 +38,7 @@
   --phone: #1E1B17;
   --phone-screen: #26221D;
   --phone-text: #A39B8F;
+  --surface: #1E1B17;
 
   color-scheme: dark;
 }
@@ -53,6 +55,7 @@
     --phone: #1E1B17;
     --phone-screen: #26221D;
     --phone-text: #A39B8F;
+    --surface: #1E1B17;
 
     color-scheme: dark;
   }
@@ -469,10 +472,10 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   line-height: 1.6;
 }
 
-/* ---- Proyectos: índice con panel ---- */
+/* ---- Proyectos: lista de títulos y ventana con el detalle ---- */
 .works {
   display: grid;
-  max-width: 68rem;
+  max-width: 60rem;
 }
 
 .work-tab {
@@ -493,7 +496,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   color: var(--gray);
   transition: color .4s var(--ease);
 }
-/* Pincelada bermellón junto al proyecto abierto */
+/* Pincelada bermellón junto al proyecto señalado */
 .work-title::before {
   content: '';
   position: absolute;
@@ -514,8 +517,15 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   color: var(--gray);
 }
 .work-tab:hover .work-title,
-.work-tab[aria-expanded="true"] .work-title { color: var(--ink); }
-.work-tab[aria-expanded="true"] .work-title::before { transform: none; }
+.work-tab:focus-visible .work-title { color: var(--ink); }
+.work-tab:hover .work-title::before,
+.work-tab:focus-visible .work-title::before { transform: none; }
+
+/* Escritorio: la pincelada sale al margen y los títulos se alinean con el de la sección */
+@media (min-width: 900px) {
+  .work-tab { padding-left: 0; }
+  .work-title::before { left: -2.5rem; width: 1.6rem; }
+}
 
 .work-panel {
   display: grid;
@@ -524,32 +534,72 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   padding: .5rem 0 2.5rem 1.75rem;
   container-type: inline-size;
 }
-/* Con JS solo se ve el proyecto abierto; sin JS, todos */
-.js .work-tab[aria-expanded="false"] + .work-panel { display: none; }
-@media (prefers-reduced-motion: no-preference) {
-  .js .work-panel { animation: work-in .5s var(--ease); }
+@media (min-width: 900px) {
+  .work-panel { padding-left: 0; }
 }
-@keyframes work-in {
-  from { opacity: 0; transform: translateY(6px); }
+/* Con JS el detalle solo se ve dentro de la ventana; sin JS, bajo cada título */
+.js .work > .work-panel { display: none; }
+
+.work-dialog {
+  width: min(46rem, calc(100% - 2 * var(--gutter)));
+  max-width: none;
+  max-height: calc(100dvh - 4rem);
+  padding: 0;
+  border: 0;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / .2);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.work-dialog::backdrop { background: rgb(20 18 15 / .5); }
+.work-dialog-inner { padding: clamp(1.5rem, 5vw, 3rem); }
+.work-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.work-dialog-title {
+  margin-bottom: .35rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  line-height: 1.2;
+}
+/* Recibe el foco al abrir para que se lea primero; no necesita marco */
+.work-dialog-title:focus { outline: none; }
+.work-dialog-close {
+  flex: none;
+  margin: -10px -10px 0 0;
+}
+.work-dialog-body .work-panel { padding: 0; }
+
+/* Móvil: la ventana ocupa toda la pantalla */
+@media (max-width: 639px) {
+  .work-dialog {
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    box-shadow: none;
+  }
 }
 
-/* Escritorio: títulos a la izquierda y el detalle fijo a la derecha */
-@media (min-width: 900px) {
-  .js .works {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    grid-template-rows: repeat(var(--works), auto) 1fr;
-    column-gap: 4rem;
-  }
-  .js .work { display: contents; }
-  /* La pincelada sale al margen y los títulos se alinean con el de la sección */
-  .js .work-tab { grid-column: 1; padding-left: 0; }
-  .js .work-title::before { left: -2.5rem; width: 1.6rem; }
-  .js .work-panel {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    padding: .85rem 0 0;
-  }
+@media (prefers-reduced-motion: no-preference) {
+  .work-dialog[open] { animation: dialog-in .35s var(--ease); }
+  .work-dialog[open]::backdrop { animation: backdrop-in .35s ease-out; }
 }
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+}
+
+/* Página quieta detrás de la ventana */
+html.is-locked { overflow: hidden; }
 
 .project-facts { display: grid; gap: 1.5rem; }
 .project-facts > div { display: grid; gap: .3rem; }
