@@ -42,7 +42,7 @@ const person = {
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="theme-color" content="#F4F1EA" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   {notFound ? (
     <meta name="robots" content="noindex" />
   ) : (
@@ -53,6 +53,17 @@ const person = {
       <link rel="alternate" hreflang="x-default" href={site.url + site.path.es} />
     </>
   )}
+
+  <!-- Tema antes de pintar: la elección guardada manda; sin ella, el tema del sistema vía CSS -->
+  <script is:inline>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem('theme'); } catch (e) {}
+      if (theme === 'dark' || theme === 'light') document.documentElement.dataset.theme = theme;
+      else theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (theme === 'dark') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#14120F');
+    })();
+  </script>
 
   <!-- Elige idioma antes de pintar, solo al entrar por la raíz: un enlace a /en/ se respeta siempre -->
   <script is:inline define:vars={{ paths: site.path }}>

@@ -5,6 +5,9 @@
   --gray: #616161;
   --line: #D6CDBF;
   --accent: #A8402F; /* bermellón: logo, sello y números de sección; menos del 5 % */
+  --seal: #A8402F;   /* el sello conserva su rojo en los dos temas */
+  --mountain: #1A1B1D; /* tinta de las montañas; Sansui la lee de aquí */
+  --grain-filter: none;
 
   --phone: #E9E3D8;
   --phone-screen: #E0D9CC;
@@ -18,6 +21,41 @@
   --ease: cubic-bezier(.2, .6, .2, 1);
 
   color-scheme: light;
+}
+
+/* Modo oscuro: paisaje nocturno, montañas en trazo gris claro sobre tinta.
+   Se aplica con data-theme="dark" o, sin elección guardada, con el tema del sistema */
+:root[data-theme="dark"] {
+  --paper: #14120F;
+  --ink: #E8E3D8;
+  --gray: #9C958A;
+  --line: #38332C;
+  --accent: #D0604A; /* más claro para leerse sobre oscuro */
+  --mountain: #CFCBC3;
+  --grain-filter: invert(1);
+
+  --phone: #1E1B17;
+  --phone-screen: #26221D;
+  --phone-text: #A39B8F;
+
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --paper: #14120F;
+    --ink: #E8E3D8;
+    --gray: #9C958A;
+    --line: #38332C;
+    --accent: #D0604A;
+    --mountain: #CFCBC3;
+    --grain-filter: invert(1);
+
+    --phone: #1E1B17;
+    --phone-screen: #26221D;
+    --phone-text: #A39B8F;
+
+    color-scheme: dark;
+  }
 }
 
 /* ---- Base ---- */
@@ -87,6 +125,7 @@ button { font: inherit; color: inherit; }
   z-index: 0;
   pointer-events: none;
   opacity: .025;
+  filter: var(--grain-filter);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -133,7 +172,7 @@ button { font: inherit; color: inherit; }
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(244, 241, 234, .94);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
   border-bottom: 1px solid var(--line);
 }
 
@@ -204,6 +243,42 @@ html[data-lang="en"] .lang-en { color: var(--ink); }
 html[data-lang="es"] .lang-toggle:hover .lang-es,
 html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
 
+/* Selector de tema: círculo a pincel medio entintado que gira al cambiar */
+.switches {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--gray);
+  cursor: pointer;
+  transition: color .3s var(--ease);
+}
+.theme-toggle:hover { color: var(--ink); }
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  transition: transform .6s var(--ease);
+}
+.theme-toggle .enso {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.theme-toggle .half { fill: currentColor; }
+.theme-toggle[aria-pressed="true"] svg { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle svg { transition: none; }
+}
+
 /* Móvil: navegación en una segunda fila horizontal, desplazable */
 @media (max-width: 767px) {
   :root { --header-h: 6.5rem; }
@@ -213,7 +288,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
     padding-top: .75rem;
   }
   .header-tools { display: contents; }
-  .lang-toggle { margin-left: auto; margin-right: -.25rem; }
+  .switches { margin-left: auto; margin-right: -.25rem; }
   .site-nav {
     order: 3;
     width: calc(100% + 2 * var(--gutter));
@@ -276,10 +351,10 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   place-items: center;
   width: 2.1rem;
   padding: .35rem 0;
-  background: var(--accent);
-  color: var(--paper);
+  background: var(--seal);
+  color: #F4F1EA;
   border-radius: 2px;
-  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(244, 241, 234, .4);
+  box-shadow: inset 0 0 0 2px var(--seal), inset 0 0 0 3px rgba(244, 241, 234, .4);
   transform-origin: bottom left;
   transform: rotate(-2deg) scale(1.35);
   font-family: var(--font-serif);

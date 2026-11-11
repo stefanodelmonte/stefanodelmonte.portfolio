@@ -81,10 +81,20 @@ const nav = [
         </ul>
       </nav>
 
-      <a id="langToggle" class="lang-toggle" href={site.path[other]} hreflang={other}
-         aria-label={t('a11y.lang')} data-i18n-attr="aria-label:a11y.lang">
-        <span class="lang-es" lang="es">ES</span><span class="lang-sep" aria-hidden="true">/</span><span class="lang-en" lang="en">EN</span>
-      </a>
+      <div class="switches">
+        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false"
+                aria-label={t('a11y.theme')} data-i18n-attr="aria-label:a11y.theme">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path class="half" d="M12 3.6a8.4 8.4 0 0 1 0 16.8z" />
+            <path class="enso" d="M13.6 3.75A8.4 8.4 0 1 1 9.4 4.1" />
+          </svg>
+        </button>
+
+        <a id="langToggle" class="lang-toggle" href={site.path[other]} hreflang={other}
+           aria-label={t('a11y.lang')} data-i18n-attr="aria-label:a11y.lang">
+          <span class="lang-es" lang="es">ES</span><span class="lang-sep" aria-hidden="true">/</span><span class="lang-en" lang="en">EN</span>
+        </a>
+      </div>
     </div>
   </div>
 </header>
@@ -255,7 +265,9 @@ const nav = [
 
 <script>
   import { initI18n } from '../scripts/i18n';
+  import { initTheme } from '../scripts/theme';
   initI18n();
+  initTheme();
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 

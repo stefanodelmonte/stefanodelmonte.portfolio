@@ -8,6 +8,7 @@ export const es = {
   'a11y.home': 'Inicio',
   'a11y.nav': 'Navegación principal',
   'a11y.lang': 'Cambiar idioma: castellano o inglés',
+  'a11y.theme': 'Modo oscuro',
 
   'nav.about': 'Sobre mí',
   'nav.projects': 'Proyectos',
