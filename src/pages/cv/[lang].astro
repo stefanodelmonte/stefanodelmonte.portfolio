@@ -28,7 +28,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 </head>
 <body class="cv">
   <header class="cv-head">
-    <canvas id="cvSumi" class="cv-sumi" aria-hidden="true"></canvas>
+    <div class="cv-sumi" aria-hidden="true"><canvas id="cvSumi"></canvas></div>
     <h1>Stefano <span class="nowrap">Delmonte<span class="seal-anchor" aria-hidden="true"><span class="seal is-stamped"><span>S</span><span>D</span></span></span></span></h1>
     <p class="cv-role">{t('hero.title')}</p>
     <p class="cv-contact">
@@ -135,6 +135,8 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
       // Proporción con la que el shader compone la cordillera completa: así ocupa todo el ancho
       gl.uniform1f(u('u_aspect'), 1.6);
       gl.uniform1f(u('u_scale'), 1);
+      // Sin hundir la parte izquierda: en la hoja no hay texto que esquivar dentro del lienzo
+      gl.uniform1f(u('u_spread'), 0.5);
       gl.uniform3f(u('u_ink'), r, g, b);
       gl.uniform1f(u('u_paint'), 1); // ya pintadas
       gl.uniform1f(u('u_fade'), 1);
@@ -144,7 +146,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
       gl.uniform1f(u('u_time'), 0);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     } else if (canvas) {
-      canvas.hidden = true;
+      canvas.parentElement!.hidden = true;
     }
   </script>
 </body>
@@ -169,16 +171,18 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   .cv-head { position: relative; margin-bottom: 7mm; }
   .cv-sumi {
     position: absolute;
+    /* Ocupa el hueco a la derecha del nombre, desde el borde superior hasta el final de la cabecera */
     top: -14mm;
+    bottom: 0;
+    left: 98mm;
     right: -17mm;
-    /* Apaisado: la cordillera se extiende a lo largo de la cabecera */
-    width: 130mm;
-    height: 58mm;
     pointer-events: none;
-    /* Se funden con el papel por abajo, como la niebla de la web */
-    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
-    mask-image: linear-gradient(to bottom, #000 70%, transparent);
+    /* La base se funde con el papel justo en la línea de la cabecera */
+    -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent);
+    mask-image: linear-gradient(to bottom, #000 82%, transparent);
   }
+  /* Un canvas no se estira con left/right/bottom: llena el contenedor, que sí lo hace */
+  .cv-sumi canvas { display: block; width: 100%; height: 100%; }
   .cv-head h1 {
     position: relative;
     font-family: var(--font-serif);

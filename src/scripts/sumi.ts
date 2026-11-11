@@ -20,6 +20,7 @@ export const FRAG = `
   uniform float u_paint;
   uniform float u_mx;
   uniform float u_scale;
+  uniform float u_spread; // 0 en la web; el CV la sube para que la cordillera ocupe todo el ancho
   uniform vec3 u_ink;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -48,7 +49,7 @@ export const FRAG = `
   }
   float cornerMask(float cx) {
     // En vertical la pendiente es más suave para no formar paredes
-    return smoothstep(u_aspect < 0.8 ? -0.3 : 0.3, 0.95, cx);
+    return smoothstep(u_aspect < 0.8 ? -0.3 : 0.3 - u_spread, 0.95, cx);
   }
 
   // Altura de la cresta de una capa; se hunde hacia la izquierda conservando el perfil
