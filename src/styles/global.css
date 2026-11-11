@@ -697,28 +697,26 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   color: var(--phone-text);
 }
 
-/* ---- Sobre mí: texto y ficha ---- */
+/* ---- Sobre mí: el texto arriba y los datos debajo, en rejilla ---- */
 .profile {
   display: grid;
-  gap: 3.5rem;
-  max-width: 64rem;
-}
-@media (min-width: 900px) {
-  .profile {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 5rem;
-    align-items: start;
-  }
+  gap: clamp(3rem, 7vw, 4.5rem);
+  max-width: 56rem;
 }
 
-.profile-facts { display: grid; }
+.profile-facts {
+  display: grid;
+  gap: 2.25rem 2.5rem;
+}
+@media (min-width: 640px) {
+  .profile-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .profile-facts > .fact-wide { grid-column: span 2; }
+}
 .profile-facts > div {
   display: grid;
-  gap: .3rem;
-  padding-block: 1rem;
-  border-top: 1px solid var(--line);
+  align-content: start;
+  gap: .6rem;
 }
-.profile-facts > div:last-child { border-bottom: 1px solid var(--line); }
 .profile-facts dt {
   font-size: .75rem;
   font-weight: 400;
@@ -730,6 +728,7 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   gap: .15rem;
   font-weight: 400;
 }
+.profile-facts dd ul { display: grid; gap: .2rem; }
 
 .lang-list li {
   display: flex;

@@ -181,15 +181,11 @@ const nav = [
         </div>
         <dl class="profile-facts" data-reveal>
           {skills.map((group) => (
-            <div><dt data-i18n={group.key}>{t(group.key)}</dt><dd>{group.items.join(' · ')}</dd></div>
+            <div>
+              <dt data-i18n={group.key}>{t(group.key)}</dt>
+              <dd><ul>{group.items.map((item) => <li>{item}</li>)}</ul></dd>
+            </div>
           ))}
-          <div>
-            <dt data-i18n="about.education">{t('about.education')}</dt>
-            <dd>
-              <span data-i18n="education.degree">{t('education.degree')}</span>
-              <span class="muted">La Salle Tarragona · <span data-i18n="education.dates">{t('education.dates')}</span></span>
-            </dd>
-          </div>
           <div>
             <dt data-i18n="education.languages">{t('education.languages')}</dt>
             <dd>
@@ -203,6 +199,13 @@ const nav = [
                   </li>
                 ))}
               </ul>
+            </dd>
+          </div>
+          <div class="fact-wide">
+            <dt data-i18n="about.education">{t('about.education')}</dt>
+            <dd>
+              <span data-i18n="education.degree">{t('education.degree')}</span>
+              <span class="muted">La Salle Tarragona · <span data-i18n="education.dates">{t('education.dates')}</span></span>
             </dd>
           </div>
         </dl>
