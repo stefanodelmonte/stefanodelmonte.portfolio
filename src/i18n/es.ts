@@ -1,27 +1,28 @@
 // Textos en castellano (idioma por defecto)
 export const es = {
   'meta.title': 'Stefano Delmonte · Desarrollador de software',
-  'meta.description': 'Portfolio de Stefano Delmonte, desarrollador de software. Backend con Java y Spring Boot, Android con Kotlin. En busca de prácticas.',
+  'meta.description': 'Portfolio de Stefano Delmonte, desarrollador de software. Backend con Java y Spring Boot y apps Android con Kotlin.',
   'meta.imageAlt': 'Stefano Delmonte, desarrollador de software, junto a unas montañas a tinta y un sello rojo',
 
   'a11y.skip': 'Saltar al contenido',
   'a11y.home': 'Inicio',
   'a11y.nav': 'Navegación principal',
   'a11y.lang': 'Cambiar idioma: castellano o inglés',
+  'a11y.theme': 'Modo oscuro',
 
   'nav.about': 'Sobre mí',
   'nav.projects': 'Proyectos',
-  'nav.skills': 'Habilidades',
-  'nav.education': 'Formación',
   'nav.contact': 'Contacto',
 
   'hero.title': 'Desarrollador de software',
   'hero.cv': 'Descargar CV',
 
-  'about.p1': 'Me estoy formando en Desarrollo de Aplicaciones Multiplataforma, con foco en backend con Java y Spring Boot y en desarrollo Android con Kotlin.',
+  'about.heading': 'Sobre mí',
+  'about.p1': 'Soy desarrollador de software, con foco en backend con Java y Spring Boot y en desarrollo Android con Kotlin.',
   'about.p2': 'Antes de programar trabajé en comercio, atención al cliente y turismo. De esa trayectoria diversa me llevo responsabilidad, capacidad de adaptación y la costumbre de trabajar en equipo bajo presión.',
-  'about.p3': 'Busco unas prácticas donde aplicar lo que sé, aprender de un equipo y seguir creciendo como desarrollador.',
+  'about.education': 'Formación',
 
+  'projects.heading': 'Proyectos',
   'projects.problem': 'Problema',
   'projects.solution': 'Solución',
   'projects.stack': 'Stack',
@@ -68,6 +69,7 @@ export const es = {
   'lang.it': 'Italiano',
   'lang.native': 'Nativo',
 
+  'contact.heading': 'Contacto',
   'contact.email': 'Correo',
   'contact.send': 'Enviar correo',
   'contact.copy': 'Copiar correo',
