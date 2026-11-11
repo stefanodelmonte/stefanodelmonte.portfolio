@@ -2,6 +2,7 @@
 import EcosystemDiagram from './EcosystemDiagram.astro';
 import Sansui from './Sansui.astro';
 import { site, t as translate, type Lang, type Key } from '../i18n';
+import { projects, pk, skills, languages } from '../data/profile';
 
 interface Props {
   lang: Lang;
@@ -19,38 +20,6 @@ type Media =
   | { type: 'image'; src: string; width: number; height: number }
   | { type: 'video'; src: string; poster?: string };
 const androidMedia = { type: 'none' } as Media;
-
-// Cada proyecto toma sus textos de las claves "<id>.title", "<id>.status", "<id>.problem" y "<id>.solution".
-// repo: sin definir oculta la fila de enlaces; vacío muestra "Código disponible bajo petición"
-type ProjectId = 'tpv' | 'library' | 'android' | 'web';
-const projects: { id: ProjectId; stack: string[]; repo?: string; android?: boolean }[] = [
-  { id: 'tpv', stack: ['JavaScript', 'HTML', 'CSS', 'PWA', 'IndexedDB', 'WebUSB (ESC/POS)'] },
-  {
-    id: 'library',
-    stack: ['Java 21', 'Spring Boot', 'JPA / Hibernate', 'MySQL', 'Thymeleaf', 'Maven'],
-    repo: 'https://github.com/stefanodelmonte/biblioteca',
-  },
-  { id: 'android', stack: ['Kotlin', 'Android', 'API REST'], repo: '', android: true },
-  {
-    id: 'web',
-    stack: ['Astro', 'TypeScript', 'CSS', 'WebGL', 'GitHub Actions'],
-    repo: 'https://github.com/stefanodelmonte/stefanodelmonte.portfolio',
-  },
-];
-const pk = (id: ProjectId, field: 'title' | 'status' | 'problem' | 'solution') => `${id}.${field}` as Key;
-
-const skills = [
-  { key: 'skills.backend', items: ['Java', 'Kotlin', 'Spring Boot', 'JPA / Hibernate', 'PostgreSQL', 'MySQL'] },
-  { key: 'skills.frontend', items: ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Astro', 'Thymeleaf'] },
-  { key: 'skills.tools', items: ['Git / GitHub', 'GitHub Actions', 'Maven', 'Google Workspace'] },
-] as const;
-
-const languages = [
-  { key: 'lang.es', level: 'lang.native' },
-  { key: 'lang.ca', level: 'lang.native' },
-  { key: 'lang.en', level: 'B2' },
-  { key: 'lang.it', level: 'B2' },
-] as const;
 
 const nav = [
   { id: 'projects', key: 'nav.projects' },

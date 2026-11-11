@@ -8,7 +8,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      filter: (page) => !page.includes('/404') && !page.includes('/cv/'),
       i18n: {
         defaultLocale: 'es',
         locales: { es: 'es-ES', en: 'en-GB' }

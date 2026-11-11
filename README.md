@@ -43,6 +43,7 @@ Requisitos: Node.js 22.23+ y npm.
 npm install          # Instalar dependencias
 npm run dev          # Servidor de desarrollo (localhost:4321)
 npm run check        # Comprobación de tipos
+npm run cv           # Regenera los CV en PDF (public/cv/) a partir de /cv/es/ y /cv/en/
 npm run build        # Build de producción
 npm run preview      # Preview del build
 ```

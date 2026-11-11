@@ -80,4 +80,8 @@ export const es = {
   '404.heading': 'Página no encontrada',
   '404.text': 'Esta dirección no existe o ha cambiado de sitio.',
   '404.back': 'Volver al inicio',
+
+  'cv.title': 'CV · Stefano Delmonte',
+  'cv.location': 'Tarragona, España',
+  'cv.experience': 'Experiencia',
 } as const;

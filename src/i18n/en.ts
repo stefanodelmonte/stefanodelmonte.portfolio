@@ -82,4 +82,8 @@ export const en: Record<keyof typeof es, string> = {
   '404.heading': 'Page not found',
   '404.text': "This address doesn't exist or has moved.",
   '404.back': 'Back to home',
+
+  'cv.title': 'CV · Stefano Delmonte',
+  'cv.location': 'Tarragona, Spain',
+  'cv.experience': 'Experience',
 };
