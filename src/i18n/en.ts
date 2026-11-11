@@ -3,7 +3,7 @@ import type { es } from './es';
 // English texts; same keys as es.ts
 export const en: Record<keyof typeof es, string> = {
   'meta.title': 'Stefano Delmonte · Software developer',
-  'meta.description': 'Portfolio of Stefano Delmonte, software developer. Backend with Java and Spring Boot, Android with Kotlin. Looking for an internship.',
+  'meta.description': 'Portfolio of Stefano Delmonte, software developer. Backend with Java and Spring Boot and Android apps with Kotlin.',
   'meta.imageAlt': 'Stefano Delmonte, software developer, beside ink-painted mountains and a red seal',
 
   'a11y.skip': 'Skip to content',
@@ -14,17 +14,17 @@ export const en: Record<keyof typeof es, string> = {
 
   'nav.about': 'About',
   'nav.projects': 'Projects',
-  'nav.skills': 'Skills',
-  'nav.education': 'Education',
   'nav.contact': 'Contact',
 
   'hero.title': 'Software developer',
   'hero.cv': 'Download CV',
 
-  'about.p1': "I'm training in Multiplatform Application Development, focusing on backend with Java and Spring Boot and on Android development with Kotlin.",
+  'about.heading': 'About',
+  'about.p1': "I'm a software developer, focusing on backend with Java and Spring Boot and on Android development with Kotlin.",
   'about.p2': 'Before programming I worked in retail, customer service and tourism. That varied background gave me responsibility, adaptability and the habit of working in a team under pressure.',
-  'about.p3': "I'm looking for an internship where I can apply what I know, learn from a team and keep growing as a developer.",
+  'about.education': 'Education',
 
+  'projects.heading': 'Projects',
   'projects.problem': 'Problem',
   'projects.solution': 'Solution',
   'projects.stack': 'Stack',
@@ -71,6 +71,7 @@ export const en: Record<keyof typeof es, string> = {
   'lang.it': 'Italian',
   'lang.native': 'Native',
 
+  'contact.heading': 'Contact',
   'contact.email': 'Email',
   'contact.send': 'Send email',
   'contact.copy': 'Copy email',
