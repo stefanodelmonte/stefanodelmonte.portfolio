@@ -21,6 +21,7 @@ export const en: Record<keyof typeof es, string> = {
   'hero.cv': 'Download CV',
 
   'about.heading': 'About',
+  'about.location': 'Location',
   'about.p1': "I'm a software developer, focusing on backend with Java and Spring Boot and on Android development with Kotlin.",
   'about.p2': 'Before programming I worked in retail, customer service and tourism. That varied background gave me responsibility, adaptability and the habit of working in a team under pressure.',
   'about.education': 'Education',

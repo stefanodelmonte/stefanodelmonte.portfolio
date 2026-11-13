@@ -460,18 +460,6 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
   .section { padding-left: 8%; }
 }
 
-/* ---- Sobre mí ---- */
-.about-text {
-  max-width: 38rem;
-  display: grid;
-  gap: 1.25rem;
-}
-.about-text .lead {
-  font-family: var(--font-serif);
-  font-size: clamp(1.2rem, 2.6vw, 1.5rem);
-  line-height: 1.6;
-}
-
 /* ---- Proyectos: lista de títulos y ventana con el detalle ---- */
 .works {
   display: grid;

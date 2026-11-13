@@ -19,6 +19,7 @@ export const es = {
   'hero.cv': 'Descargar CV',
 
   'about.heading': 'Sobre mí',
+  'about.location': 'Ubicación',
   'about.p1': 'Soy desarrollador de software, con foco en backend con Java y Spring Boot y en desarrollo Android con Kotlin.',
   'about.p2': 'Antes de programar trabajé en comercio, atención al cliente y turismo. De esa trayectoria diversa me llevo responsabilidad, capacidad de adaptación y la costumbre de trabajar en equipo bajo presión.',
   'about.education': 'Formación',

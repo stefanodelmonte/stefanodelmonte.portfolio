@@ -155,16 +155,16 @@ const nav = [
     </div>
   </section>
 
-  <!-- Sobre mí: texto a la izquierda, ficha a la derecha -->
+  <!-- Sobre mí: solo datos, una línea por cada uno -->
   <section id="about" class="section wrap" aria-labelledby="about-title">
     <div class="section-body">
       <h2 id="about-title" class="section-heading" data-reveal data-i18n="about.heading">{t('about.heading')}</h2>
       <div class="profile">
-        <div class="about-text" data-reveal>
-          <p class="lead" data-i18n="about.p1">{t('about.p1')}</p>
-          <p data-i18n="about.p2">{t('about.p2')}</p>
-        </div>
         <dl class="profile-facts" data-reveal>
+          <div>
+            <dt data-i18n="about.location">{t('about.location')}</dt>
+            <dd data-i18n="cv.location">{t('cv.location')}</dd>
+          </div>
           {skills.map((group) => (
             <div>
               <dt data-i18n={group.key}>{t(group.key)}</dt>
