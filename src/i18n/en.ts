@@ -35,7 +35,7 @@ export const en: Record<keyof typeof es, string> = {
   'projects.onRequest': 'Code available on request',
 
   'farm.title': 'Content Farm',
-  'farm.status': 'In use',
+  'farm.status': 'In production',
   'farm.problem': "A holiday rental company with three brands needed to post on social media consistently, without spending hours coming up with and laying out each piece, and without claiming anything the photos don't show.",
   'farm.solution': 'A system that suggests ideas, produces carousels, posts and stories from real photos, checks that every text matches what the photo shows and places the pieces in a web panel where the team decides. Nothing is published without approval.',
 

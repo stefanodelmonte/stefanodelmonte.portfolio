@@ -33,7 +33,7 @@ export const es = {
   'projects.onRequest': 'Código disponible bajo petición',
 
   'farm.title': 'Content Farm',
-  'farm.status': 'En uso',
+  'farm.status': 'En producción',
   'farm.problem': 'Una empresa de alquiler vacacional con tres marcas necesitaba publicar contenido en redes de forma constante, sin dedicar horas a idear y maquetar cada pieza y sin afirmar nada que las fotos no muestren.',
   'farm.solution': 'Sistema que propone ideas, produce carruseles, posts y stories a partir de fotos reales, comprueba que cada texto coincide con lo que enseña la foto y deja las piezas en un panel web donde el equipo decide. Nada se publica sin aprobación.',
 
