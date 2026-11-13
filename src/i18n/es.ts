@@ -32,6 +32,11 @@ export const es = {
   'projects.code': 'Código',
   'projects.onRequest': 'Código disponible bajo petición',
 
+  'farm.title': 'Content Farm',
+  'farm.status': 'En uso',
+  'farm.problem': 'Una empresa de alquiler vacacional con tres marcas necesitaba publicar contenido en redes de forma constante, sin dedicar horas a idear y maquetar cada pieza y sin afirmar nada que las fotos no muestren.',
+  'farm.solution': 'Sistema que propone ideas, produce carruseles, posts y stories a partir de fotos reales, comprueba que cada texto coincide con lo que enseña la foto y deja las piezas en un panel web donde el equipo decide. Nada se publica sin aprobación.',
+
   'tpv.title': 'Sistema TPV para pyme',
   'tpv.status': 'En producción',
   'tpv.problem': 'Una pyme necesitaba registrar ventas desde una tablet, emitir tickets al momento y conservar un histórico fiable sin trabajo manual.',
@@ -83,6 +88,6 @@ export const es = {
   '404.back': 'Volver al inicio',
 
   'cv.title': 'CV · Stefano Delmonte',
-  'cv.location': 'Tarragona, España',
+  'cv.location': 'Cataluña, España',
   'cv.experience': 'Experiencia',
 } as const;

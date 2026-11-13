@@ -4,8 +4,11 @@ import type { Key } from '../i18n';
 
 // Cada proyecto toma sus textos de las claves "<id>.title", "<id>.status", "<id>.problem" y "<id>.solution".
 // repo: sin definir oculta la fila de enlaces; vacío muestra "Código disponible bajo petición"
-export type ProjectId = 'tpv' | 'library' | 'android' | 'web';
-export const projects: { id: ProjectId; stack: string[]; repo?: string; android?: boolean }[] = [
+// cv: false lo deja fuera del CV (en la web sigue apareciendo)
+export type ProjectId = 'farm' | 'tpv' | 'library' | 'android' | 'web';
+export const projects: { id: ProjectId; stack: string[]; repo?: string; android?: boolean; cv?: boolean }[] = [
+  // Repositorio privado con datos de la empresa: sin fila de enlaces
+  { id: 'farm', stack: ['Python', 'Supabase (PostgreSQL)', 'JavaScript', 'Remotion / React', 'Playwright', 'ffmpeg'] },
   { id: 'tpv', stack: ['JavaScript', 'HTML', 'CSS', 'PWA', 'IndexedDB', 'WebUSB (ESC/POS)'] },
   {
     id: 'library',
@@ -17,12 +20,14 @@ export const projects: { id: ProjectId; stack: string[]; repo?: string; android?
     id: 'web',
     stack: ['Astro', 'TypeScript', 'CSS', 'WebGL', 'GitHub Actions'],
     repo: 'https://github.com/stefanodelmonte/stefanodelmonte.portfolio',
+    // Es la propia web desde la que se descarga el CV
+    cv: false,
   },
 ];
 export const pk = (id: ProjectId, field: 'title' | 'status' | 'problem' | 'solution') => `${id}.${field}` as Key;
 
 export const skills = [
-  { key: 'skills.backend', items: ['Java', 'Kotlin', 'Spring Boot', 'JPA / Hibernate', 'PostgreSQL', 'MySQL'] },
+  { key: 'skills.backend', items: ['Java', 'Kotlin', 'Python', 'Spring Boot', 'JPA / Hibernate', 'PostgreSQL', 'MySQL', 'Supabase'] },
   { key: 'skills.frontend', items: ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Astro', 'Thymeleaf'] },
   { key: 'skills.tools', items: ['Git / GitHub', 'GitHub Actions', 'Maven', 'Google Workspace'] },
 ] as const;

@@ -34,6 +34,11 @@ export const en: Record<keyof typeof es, string> = {
   'projects.code': 'Code',
   'projects.onRequest': 'Code available on request',
 
+  'farm.title': 'Content Farm',
+  'farm.status': 'In use',
+  'farm.problem': "A holiday rental company with three brands needed to post on social media consistently, without spending hours coming up with and laying out each piece, and without claiming anything the photos don't show.",
+  'farm.solution': 'A system that suggests ideas, produces carousels, posts and stories from real photos, checks that every text matches what the photo shows and places the pieces in a web panel where the team decides. Nothing is published without approval.',
+
   'tpv.title': 'POS system for a small business',
   'tpv.status': 'In production',
   'tpv.problem': 'A small business needed to record sales from a tablet, print receipts on the spot and keep a reliable sales history without manual work.',
@@ -85,6 +90,6 @@ export const en: Record<keyof typeof es, string> = {
   '404.back': 'Back to home',
 
   'cv.title': 'CV · Stefano Delmonte',
-  'cv.location': 'Tarragona, Spain',
+  'cv.location': 'Catalonia, Spain',
   'cv.experience': 'Experience',
 };

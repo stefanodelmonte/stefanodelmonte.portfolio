@@ -43,7 +43,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   <section class="cv-section">
     <h2 class="cv-heading">{t('projects.heading')}</h2>
     <div class="cv-projects">
-      {projects.map((p) => (
+      {projects.filter((p) => p.cv !== false).map((p) => (
         <article>
           <h3><span class="cv-project">{t(pk(p.id, 'title'))}</span><span class="cv-status">{t(pk(p.id, 'status'))}</span></h3>
           <p>{t(pk(p.id, 'solution'))}</p>
@@ -160,7 +160,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
     width: 210mm;
     min-height: 297mm;
     margin: 0 auto;
-    padding: 14mm 17mm 12mm;
+    padding: 14mm 17mm 8mm;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     line-height: 1.5;
@@ -168,7 +168,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   }
   .cv a { text-decoration: none; }
 
-  .cv-head { position: relative; margin-bottom: 7mm; }
+  .cv-head { position: relative; margin-bottom: 5mm; }
   .cv-sumi {
     position: absolute;
     /* Ocupa el hueco a la derecha del nombre, desde el borde superior hasta el final de la cabecera */
@@ -208,9 +208,9 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   }
   .cv-contact a { color: var(--ink); }
 
-  .cv-section { margin-top: 6mm; }
+  .cv-section { margin-top: 4.5mm; }
   .cv-heading {
-    margin-bottom: 3mm;
+    margin-bottom: 2.5mm;
     font-family: var(--font-serif);
     font-weight: 400;
     font-size: 15pt;
@@ -220,7 +220,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   .cv-projects {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 4mm 8mm;
+    gap: 3mm 8mm;
   }
   .cv-projects h3 { font-weight: 400; }
   .cv-project {
@@ -242,7 +242,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 1.2fr);
     gap: 4mm 6mm;
-    margin-top: 5mm;
+    margin-top: 4mm;
   }
   .cv-facts > div { display: grid; align-content: start; gap: .35rem; }
   .cv-facts dt,
@@ -259,7 +259,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   .cv-jobs {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 3.5mm 8mm;
+    gap: 3mm 8mm;
   }
   .cv-jobs h3 {
     font-family: var(--font-serif);
