@@ -21,11 +21,6 @@ type Media =
   | { type: 'video'; src: string; poster?: string };
 const androidMedia = { type: 'none' } as Media;
 
-const nav = [
-  { id: 'projects', key: 'nav.projects' },
-  { id: 'about', key: 'nav.about' },
-  { id: 'contact', key: 'nav.contact' },
-] as const;
 ---
 
 <Sansui />
@@ -40,14 +35,6 @@ const nav = [
     </a>
 
     <div class="header-tools">
-      <nav id="siteNav" class="site-nav" aria-label={t('a11y.nav')} data-i18n-attr="aria-label:a11y.nav">
-        <ul>
-          {nav.map((item) => (
-            <li><a href={`#${item.id}`} data-i18n={item.key}>{t(item.key)}</a></li>
-          ))}
-        </ul>
-      </nav>
-
       <div class="switches">
         <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false"
                 aria-label={t('a11y.theme')} data-i18n-attr="aria-label:a11y.theme">
@@ -168,28 +155,27 @@ const nav = [
           {skills.map((group) => (
             <div>
               <dt data-i18n={group.key}>{t(group.key)}</dt>
-              <dd><ul>{group.items.map((item) => <li>{item}</li>)}</ul></dd>
+              <dd>{group.items.join(' · ')}</dd>
             </div>
           ))}
           <div>
             <dt data-i18n="education.languages">{t('education.languages')}</dt>
             <dd>
-              <ul class="lang-list">
-                {languages.map((l) => (
-                  <li>
-                    <span data-i18n={l.key}>{t(l.key)}</span>
-                    {l.level === 'B2'
-                      ? <span class="muted">B2</span>
-                      : <span class="muted" data-i18n={l.level}>{t(l.level)}</span>}
-                  </li>
-                ))}
-              </ul>
+              {languages.map((l, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <span data-i18n={l.key}>{t(l.key)}</span>{' '}
+                  {l.level === 'B2'
+                    ? <span class="muted">B2</span>
+                    : <span class="muted" data-i18n={l.level}>{t(l.level)}</span>}
+                </>
+              ))}
             </dd>
           </div>
-          <div class="fact-wide">
+          <div>
             <dt data-i18n="about.education">{t('about.education')}</dt>
             <dd>
-              <span data-i18n="education.degree">{t('education.degree')}</span>
+              <span data-i18n="education.degree">{t('education.degree')}</span>{' '}
               <span class="muted">La Salle Tarragona · <span data-i18n="education.dates">{t('education.dates')}</span></span>
             </dd>
           </div>
