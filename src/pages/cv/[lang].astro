@@ -43,7 +43,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
   <section class="cv-section">
     <h2 class="cv-heading">{t('projects.heading')}</h2>
     <div class="cv-projects">
-      {projects.filter((p) => p.cv !== false).map((p) => (
+      {projects.map((p) => (
         <article>
           <h3><span class="cv-project">{t(pk(p.id, 'title'))}</span><span class="cv-status">{t(pk(p.id, 'status'))}</span></h3>
           <p>{t(pk(p.id, 'solution'))}</p>

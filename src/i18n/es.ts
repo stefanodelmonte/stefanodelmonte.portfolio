@@ -54,11 +54,6 @@ export const es = {
   'android.placeholder': 'Capturas próximamente',
   'android.mediaAlt': 'Captura de la app Android de la biblioteca',
 
-  'web.title': 'Portfolio personal',
-  'web.status': 'En línea',
-  'web.problem': 'Necesitaba un espacio propio para presentar proyectos y competencias, en dos idiomas y con carga rápida.',
-  'web.solution': 'Web estática bilingüe sin recargas, fondo de tinta interactivo en WebGL y despliegue automático en cada cambio.',
-
   'diagram.app': 'App Android',
   'diagram.db': 'Base de datos',
   'diagram.caption': 'Arquitectura: la app Android consume la API REST, que guarda los datos en PostgreSQL.',

@@ -56,11 +56,6 @@ export const en: Record<keyof typeof es, string> = {
   'android.placeholder': 'Screenshots coming soon',
   'android.mediaAlt': 'Screenshot of the library Android app',
 
-  'web.title': 'Personal portfolio',
-  'web.status': 'Live',
-  'web.problem': 'I needed my own space to present projects and skills, in two languages and fast to load.',
-  'web.solution': 'Bilingual static site with no page reloads, an interactive WebGL ink background and automatic deployment on every change.',
-
   'diagram.app': 'Android app',
   'diagram.db': 'Database',
   'diagram.caption': 'Architecture: the Android app consumes the REST API, which stores data in PostgreSQL.',
