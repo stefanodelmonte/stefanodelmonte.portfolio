@@ -21,6 +21,11 @@ type Media =
   | { type: 'video'; src: string; poster?: string };
 const androidMedia = { type: 'none' } as Media;
 
+const nav = [
+  { id: 'projects', key: 'nav.projects' },
+  { id: 'about', key: 'nav.about' },
+  { id: 'contact', key: 'nav.contact' },
+] as const;
 ---
 
 <Sansui />
@@ -35,6 +40,14 @@ const androidMedia = { type: 'none' } as Media;
     </a>
 
     <div class="header-tools">
+      <nav id="siteNav" class="site-nav" aria-label={t('a11y.nav')} data-i18n-attr="aria-label:a11y.nav">
+        <ul>
+          {nav.map((item) => (
+            <li><a href={`#${item.id}`} data-i18n={item.key}>{t(item.key)}</a></li>
+          ))}
+        </ul>
+      </nav>
+
       <div class="switches">
         <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false"
                 aria-label={t('a11y.theme')} data-i18n-attr="aria-label:a11y.theme">

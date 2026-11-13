@@ -209,12 +209,28 @@ button { font: inherit; color: inherit; }
   gap: 1.25rem;
 }
 
+.site-nav ul { display: flex; gap: 2rem; }
+
+.site-nav a,
 .lang-toggle {
   font-size: .85rem;
   font-weight: 400;
   letter-spacing: .04em;
   text-decoration: none;
   transition: color .3s var(--ease);
+}
+
+/* Hovers: subrayado en bermellón; el texto se queda en tinta */
+.site-nav a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .45em;
+  text-decoration-color: transparent;
+  transition: text-decoration-color .3s var(--ease);
+}
+.site-nav a:hover { text-decoration-color: var(--accent); }
+
+.lang-toggle {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
@@ -264,6 +280,34 @@ html[data-lang="en"] .lang-toggle:hover .lang-en { color: var(--ink); }
 .theme-toggle[aria-pressed="true"] svg { transform: rotate(180deg); }
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle svg { transition: none; }
+}
+
+/* Móvil: navegación en una segunda fila, repartida entre el logo y el borde derecho */
+@media (max-width: 767px) {
+  :root { --header-h: 6.5rem; }
+  .header-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding-top: .75rem;
+  }
+  .header-tools { display: contents; }
+  .switches { margin-left: auto; margin-right: -.25rem; }
+  .site-nav {
+    order: 3;
+    width: 100%;
+  }
+  .site-nav ul {
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .35rem 0 .3rem;
+    white-space: nowrap;
+  }
+  .site-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: .82rem;
+  }
 }
 
 /* ---- Hero ---- */

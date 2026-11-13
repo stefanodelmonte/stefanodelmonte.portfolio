@@ -6,9 +6,14 @@ export const es = {
 
   'a11y.skip': 'Saltar al contenido',
   'a11y.home': 'Inicio',
+  'a11y.nav': 'Navegación principal',
   'a11y.lang': 'Cambiar idioma: castellano o inglés',
   'a11y.theme': 'Modo oscuro',
   'a11y.close': 'Cerrar',
+
+  'nav.about': 'Sobre mí',
+  'nav.projects': 'Proyectos',
+  'nav.contact': 'Contacto',
 
   'hero.title': 'Desarrollador de software',
   'hero.cv': 'Descargar CV',
