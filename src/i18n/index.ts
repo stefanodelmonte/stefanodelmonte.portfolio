@@ -8,7 +8,7 @@ export const dict: Record<Lang, Record<Key, string>> = { es, en };
 
 export const site = {
   url: 'https://stefanodelmonte.com',
-  email: 'contactstefanodelmonte@gmail.com',
+  email: 'contact@stefanodelmonte.com',
   linkedin: 'https://www.linkedin.com/in/delmontestefano/',
   github: 'https://github.com/stefanodelmonte',
   cv: { es: '/cv/stefano-delmonte-cv-es.pdf', en: '/cv/stefano-delmonte-cv-en.pdf' },
